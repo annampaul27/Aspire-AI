@@ -69,3 +69,22 @@ def test_evaluate_session_endpoint():
     assert "vision_metrics" in data
     assert "radar_chart_data" in data
     assert data["overall_hireability_score"] >= 70.0
+
+def test_panel_evaluate_endpoint():
+    payload = {
+        "role": "Senior Backend Architect",
+        "question_scenario": "Design a resilient idempotency layer for payment webhooks",
+        "candidate_answer": (
+            "We persist unique idempotency keys in Redis and acquire database row locks in PostgreSQL "
+            "with SELECT FOR UPDATE before committing transactions. We also set up Kafka DLQs."
+        )
+    }
+    res = client.post("/api/v1/interview/panel/evaluate", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "panel_agents" in data
+    assert len(data["panel_agents"]) == 3
+    assert "composite_score" in data
+    assert "committee_recommendation" in data
+    assert "consensus_status" in data
+

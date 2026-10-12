@@ -12,9 +12,15 @@ from services.interview_coach.core.schemas import (
     HireabilityEvaluationReport,
 )
 from services.interview_coach.engine.interviewer import AdaptiveInterviewerEngine
+from services.interview_coach.panel_evaluator import (
+    MultiAgentPanelOrchestrator,
+    PanelEvaluationRequest,
+    MultiAgentPanelEvaluationResponse,
+)
 
 router = APIRouter()
 _engine = AdaptiveInterviewerEngine()
+_panel_orchestrator = MultiAgentPanelOrchestrator()
 
 PRESET_ROLES: List[RoleTopicPreset] = [
     RoleTopicPreset(
@@ -95,3 +101,11 @@ def evaluate_session(req: AnswerSubmissionRequest) -> HireabilityEvaluationRepor
         return _engine.evaluate_session(req)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to evaluate session: {str(e)}")
+
+
+@router.post("/panel/evaluate", response_model=MultiAgentPanelEvaluationResponse, summary="Synthesize Multi-Agent Committee Evaluation")
+def evaluate_panel_session(req: PanelEvaluationRequest) -> MultiAgentPanelEvaluationResponse:
+    try:
+        return _panel_orchestrator.evaluate(req)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to evaluate panel session: {str(e)}")

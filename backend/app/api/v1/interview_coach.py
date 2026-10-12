@@ -12,3 +12,10 @@ from services.interview_coach.api.routes import router as core_router  # noqa: E
 router = APIRouter()
 # Include all endpoints from autonomous microservice
 router.include_router(core_router)
+
+
+@router.post("/panel-evaluate", summary="Alias for /panel/evaluate")
+def panel_evaluate_alias(req: dict):
+    from services.interview_coach.api.routes import evaluate_panel_session, PanelEvaluationRequest
+    return evaluate_panel_session(PanelEvaluationRequest(**req))
+
