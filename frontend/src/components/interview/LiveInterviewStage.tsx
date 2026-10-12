@@ -11,6 +11,7 @@ import {
   HelpCircle,
   Send,
   Camera,
+  Users,
 } from "lucide-react";
 import {
   interviewCoachApi,
@@ -19,9 +20,12 @@ import {
   FollowUpProbeResponse,
   HireabilityEvaluationReport,
 } from "@/lib/api/interviewCoach";
+import { enterpriseApi } from "@/lib/api/enterprise";
+import { MultiAgentPanelEvaluationResponse } from "@/types";
 import SpeechTelemetryHUD from "./SpeechTelemetryHUD";
 import EvaluationReportModal from "./EvaluationReportModal";
 import DeviceCheckModal from "./DeviceCheckModal";
+import MultiAgentPanelModal from "./MultiAgentPanelModal";
 
 interface SpeechRecognitionResultItem {
   transcript: string;
@@ -84,6 +88,9 @@ export default function LiveInterviewStage() {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationReport, setEvaluationReport] = useState<HireabilityEvaluationReport | null>(null);
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [isEvaluatingPanel, setIsEvaluatingPanel] = useState(false);
+  const [panelEvaluation, setPanelEvaluation] = useState<MultiAgentPanelEvaluationResponse | null>(null);
+  const [isPanelModalOpen, setIsPanelModalOpen] = useState(false);
 
   // Compute live telemetry (WPM, Fillers) - Hoisted before useEffect
   const computeLiveTelemetry = useCallback((text: string, seconds: number) => {
@@ -277,6 +284,31 @@ export default function LiveInterviewStage() {
       alert("Evaluation failed: " + msg);
     } finally {
       setIsEvaluating(false);
+    }
+  };
+
+  // 9. Convene Multi-Agent Executive Panel
+  const handleMultiAgentReview = async () => {
+    setIsEvaluatingPanel(true);
+    try {
+      const scenario =
+        question?.question_scenario ||
+        "Design a globally distributed rate limiting and token bucket architecture.";
+      const answer =
+        transcript ||
+        "We deploy a Token Bucket algorithm backed by Redis Cluster with Lua scripts to ensure atomicity, complemented by local Guava caches on API gateways.";
+      const res = await enterpriseApi.evaluateInterviewPanel(
+        selectedRole,
+        scenario,
+        answer
+      );
+      setPanelEvaluation(res);
+      setIsPanelModalOpen(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      alert("Multi-agent panel deliberation failed: " + msg);
+    } finally {
+      setIsEvaluatingPanel(false);
     }
   };
 
@@ -490,14 +522,26 @@ export default function LiveInterviewStage() {
                 {isLoadingFollowUp ? "Analyzing..." : "Trigger Adaptive Follow-Up"}
               </button>
 
-              <button
-                onClick={handleSubmitEvaluation}
-                disabled={!question || isEvaluating}
-                className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-950 disabled:opacity-40 ml-auto"
-              >
-                <Send className="h-3.5 w-3.5" />
-                {isEvaluating ? "Evaluating Session..." : "Submit & Synthesize Scorecard"}
-              </button>
+              <div className="flex flex-wrap items-center gap-2.5 ml-auto">
+                <button
+                  onClick={handleMultiAgentReview}
+                  disabled={isEvaluatingPanel}
+                  className="flex items-center gap-2 rounded-xl border border-purple-600/50 bg-purple-950/40 px-4 py-2.5 text-xs font-bold text-purple-300 hover:bg-purple-900/50 shadow-lg shadow-purple-950/50 disabled:opacity-40"
+                  title="Convene 3-persona AI panel with debate consensus engine"
+                >
+                  <Users className="h-4 w-4 text-purple-400" />
+                  {isEvaluatingPanel ? "Convening Panel..." : "Executive Panel Review"}
+                </button>
+
+                <button
+                  onClick={handleSubmitEvaluation}
+                  disabled={!question || isEvaluating}
+                  className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-500 shadow-lg shadow-blue-950 disabled:opacity-40"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  {isEvaluating ? "Evaluating Session..." : "Submit & Synthesize Scorecard"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -598,6 +642,14 @@ export default function LiveInterviewStage() {
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         report={evaluationReport}
+      />
+
+      {/* Multi-Agent Panel Consensus Modal */}
+      <MultiAgentPanelModal
+        isOpen={isPanelModalOpen}
+        onClose={() => setIsPanelModalOpen(false)}
+        evaluation={panelEvaluation}
+        isLoading={isEvaluatingPanel}
       />
     </div>
   );

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Mic, Video, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Mic, Video, ShieldCheck, Users } from "lucide-react";
 import LiveInterviewStage from "@/components/interview/LiveInterviewStage";
 
 export default function InterviewCoachPage() {
@@ -28,6 +28,9 @@ export default function InterviewCoachPage() {
           </div>
 
           <div className="flex items-center gap-2 text-xs">
+            <span className="rounded-full bg-purple-500/10 border border-purple-500/30 px-3 py-1 font-semibold text-purple-400 hidden lg:flex items-center gap-1">
+              <Users className="h-3.5 w-3.5" /> Multi-Agent Panel & Debate
+            </span>
             <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 font-semibold text-emerald-400 flex items-center gap-1">
               <Video className="h-3.5 w-3.5" /> Multimodal Video & Audio
             </span>

@@ -22,6 +22,7 @@ import {
   LogOut,
 } from "lucide-react";
 import RoleGuard from "@/components/auth/RoleGuard";
+import EnterpriseSettingsCard from "@/components/employer/EnterpriseSettingsCard";
 
 export default function EmployerProfilePage() {
   const router = useRouter();
@@ -394,6 +395,9 @@ export default function EmployerProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Enterprise SSO & Outbound Webhooks */}
+        <EnterpriseSettingsCard orgId={currentOrg.id} orgName={currentOrg.name} />
       </div>
       </div>
     </RoleGuard>
