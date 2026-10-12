@@ -4,7 +4,7 @@ ASPIRE AI — COMPREHENSIVE MANUAL TESTING & QA VERIFICATION GUIDE
 Project: Aspire AI (Role-Separated Talent Infrastructure & SaaS Platform)
 Target Audience: QA Testers, Peer Reviewers, Evaluation Judges
 Last Updated: October 2026
-Version: 1.3 (Covers Sprints 1 through 9: Multimodal AI & Code Quality Hardening)
+Version: 1.5 (Covers Sprints 1 through 11: Multi-Agent Panel, Enterprise SSO & Webhooks)
 
 --------------------------------------------------------------------------------
 TABLE OF CONTENTS
@@ -20,8 +20,9 @@ TABLE OF CONTENTS
 9. TEST SUITE 7: CRYPTOGRAPHIC PROOF-OF-WORK VERIFICATION (/verify/[hash])
 10. TEST SUITE 8: REAL-TIME WEBSOCKETS & COLLABORATIVE HIRING PIPELINE
 11. TEST SUITE 9: MULTIMODAL AI INTERVIEW COACH (STREAMLIT & NEXT.JS)
-12. TEST SUITE 10: AUTOMATED CODE QUALITY & LINTING AUDIT VERIFICATION
-13. QA ISSUE REPORTING TEMPLATE
+12. TEST SUITE 10: OBSERVABILITY, PROMETHEUS METRICS & FUNNEL ANALYTICS
+13. TEST SUITE 11: MULTI-AGENT PANEL, ENTERPRISE SSO & ATS WEBHOOKS
+14. QA ISSUE REPORTING TEMPLATE
 
 ================================================================================
 1. LOCAL ENVIRONMENT SETUP & SERVER STARTUP
@@ -550,10 +551,10 @@ TEST 10.5: Full Backend & Service Test Suite (Pytest)
   148 passed (100% pass rate) with zero failures or unexpected errors.
 
 ===============================================================================
-11. SPRINT 10: OBSERVABILITY, PROMETHEUS METRICS & RECRUITMENT ANALYTICS
+12. SPRINT 10: OBSERVABILITY, PROMETHEUS METRICS & RECRUITMENT ANALYTICS
 ===============================================================================
 
-TEST 11.1: Root Prometheus OpenMetrics Exposition Endpoint
+TEST 12.1: Root Prometheus OpenMetrics Exposition Endpoint
 - Prerequisites: Backend server running on port 8000.
 - Steps:
   1. Open a browser or terminal and issue:
@@ -571,7 +572,7 @@ TEST 11.1: Root Prometheus OpenMetrics Exposition Endpoint
     # HELP sandbox_executions_total Sandbox code execution counter
     # TYPE sandbox_executions_total counter
 
-TEST 11.2: Recruitment Funnel Conversion Velocity & Dwell Times
+TEST 12.2: Recruitment Funnel Conversion Velocity & Dwell Times
 - Steps:
   1. Issue a GET request:
      curl -i http://localhost:8000/api/v1/analytics/hiring-funnel?org_id=org-acme
@@ -580,7 +581,7 @@ TEST 11.2: Recruitment Funnel Conversion Velocity & Dwell Times
   - Returns total candidates, 5 stages (Applied, Screened, Shortlisted, Interview, Offer Extended).
   - Returns calculated conversion rates, dwell times (hours), reviewer consensus agreement score, and top candidate skill deficits.
 
-TEST 11.3: Real-Time APM System Telemetry HUD
+TEST 12.3: Real-Time APM System Telemetry HUD
 - Steps:
   1. Issue a GET request:
      curl -i http://localhost:8000/api/v1/analytics/system-telemetry
@@ -588,7 +589,7 @@ TEST 11.3: Real-Time APM System Telemetry HUD
   - HTTP 200 OK with JSON response.
   - Returns `status: "healthy"`, `p50_latency_ms`, `p95_latency_ms`, `active_websocket_connections`, `sandbox_executions_count`, `billing_webhooks_count`, and `sla_target_ms: 3000.0`.
 
-TEST 11.4: Quota Burn-Rate & Runway Velocity
+TEST 12.4: Quota Burn-Rate & Runway Velocity
 - Steps:
   1. Issue a GET request:
      curl -i http://localhost:8000/api/v1/analytics/quota-burn-rate?org_id=org-acme
@@ -596,7 +597,7 @@ TEST 11.4: Quota Burn-Rate & Runway Velocity
   - HTTP 200 OK.
   - Returns `plan: "Growth"`, `active_jobs_used`, `active_jobs_limit`, `evaluations_used`, `evaluations_limit`, `evaluations_quota_pct`, and `projected_runway_days`.
 
-TEST 11.5: Frontend Employer Portal "Hiring Analytics & APM" Tab
+TEST 12.5: Frontend Employer Portal "Hiring Analytics & APM" Tab
 - Prerequisites: Frontend running on port 3000, backend running on port 8000.
 - Steps:
   1. Navigate to: http://localhost:3000/employer
@@ -610,14 +611,103 @@ TEST 11.5: Frontend Employer Portal "Hiring Analytics & APM" Tab
      - Click "OpenMetrics" button: Opens modal displaying raw Prometheus exposition stream.
      - Click "Refresh" button: Synchronizes live metrics with toast notification.
 
-TEST 11.6: Automated Observability & Analytics Pytest Suite
+TEST 12.6: Automated Observability & Analytics Pytest Suite
 - Command:
   python -m pytest backend/test_sprint10_observability_and_analytics.py -v
 - Expected Result:
   6 passed in ~2.5s with 100% pass rate.
 
 ===============================================================================
-12. QA ISSUE REPORTING TEMPLATE (FOR YOUR FRIEND TO SUBMIT BUGS)
+13. SPRINT 11: MULTI-AGENT AI INTERVIEW PANEL, ENTERPRISE SSO & ATS WEBHOOKS
+===============================================================================
+
+TEST 13.1: Multi-Agent AI Interview Panel Deliberation & Arbitration Debate
+- Prerequisites: Backend server running on port 8000.
+- Steps:
+  1. Open a terminal and issue a curl POST request:
+     curl -i -X POST http://localhost:8000/api/v1/interview-coach/panel-evaluate \
+       -H "Content-Type: application/json" \
+       -d "{\"role\": \"Staff Distributed Systems Engineer\", \"question_scenario\": \"Design globally distributed rate limiter\", \"candidate_answer\": \"We deploy a Token Bucket algorithm backed by Redis Cluster with Lua scripts to ensure atomicity, complemented by local Guava caches on API gateways.\"}"
+- Expected Result:
+  - HTTP 200 OK with JSON response.
+  - Returns `panel_agents`: 3 specialist scorecards (Alex Rivera / Lead Software Architect, Marcus Chen / Principal Systems Architect, Elena Rostova / VP of Engineering & Culture).
+  - Each agent scorecard includes `initial_score`, `final_score`, `recommendation`, `strengths`, `concerns`, and `critique_quote`.
+  - Returns `debate_occurred: true/false`, `debate_transcripts` (with speaker, argument, concessions, and score adjustments), `composite_score`, `committee_recommendation`, `consensus_status`, and `executive_summary`.
+
+TEST 13.2: Enterprise SSO Domain Discovery
+- Steps:
+  1. Test known corporate domain:
+     curl -i -X POST http://localhost:8000/api/v1/auth/sso/discover \
+       -H "Content-Type: application/json" \
+       -d "{\"domain\": \"acme.com\"}"
+  2. Test unknown consumer domain:
+     curl -i -X POST http://localhost:8000/api/v1/auth/sso/discover \
+       -H "Content-Type: application/json" \
+       -d "{\"domain\": \"randomstartup.io\"}"
+- Expected Result:
+  - Step 1 returns `sso_enabled: true`, `org_id: "org-acme"`, `provider: "okta"`, `authorize_url: "/api/v1/auth/sso/authorize?org_id=org-acme"`.
+  - Step 2 returns `sso_enabled: false`.
+
+TEST 13.3: Enterprise SSO Authorization & JIT Recruiter Provisioning
+- Steps:
+  1. Initiate SSO authorization redirect:
+     curl -i "http://localhost:8000/api/v1/auth/sso/authorize?org_id=org-acme"
+  2. Complete SSO callback with valid token and email assertion:
+     curl -i -X POST http://localhost:8000/api/v1/auth/sso/callback \
+       -H "Content-Type: application/json" \
+       -d "{\"org_id\": \"org-acme\", \"provider\": \"okta\", \"idp_token\": \"mock-okta-assertion-token\", \"email\": \"new.recruiter@acme.com\", \"name\": \"Alex Mercer\"}"
+- Expected Result:
+  - Step 1 returns HTTP 307 Temporary Redirect with `Location: https://acme.okta.com/app/aspire/sso/saml?state=...`.
+  - Step 2 returns HTTP 200 OK with `access_token`, `token_type: "bearer"`, `role: "employer"`, and user profile with `is_jit_provisioned: true`.
+
+TEST 13.4: Outbound ATS Event Webhook Lifecycle & HMAC-SHA256 Signing
+- Steps:
+  1. Register a new webhook subscription:
+     curl -i -X POST http://localhost:8000/api/v1/webhooks/outbound \
+       -H "Content-Type: application/json" \
+       -d "{\"org_id\": \"org-acme\", \"target_url\": \"https://ats.acme.com/api/webhooks/aspire\", \"secret_token\": \"whsec_topsecret_key\", \"subscribed_events\": [\"interview.completed\", \"scorecard.calibrated\"]}"
+  2. Copy the returned `subscription.id` and send a test ping:
+     curl -i -X POST http://localhost:8000/api/v1/webhooks/outbound/{sub_id}/test
+  3. Fetch delivery audit logs:
+     curl -i "http://localhost:8000/api/v1/webhooks/outbound/{sub_id}/deliveries"
+- Expected Result:
+  - Step 1 returns HTTP 201 Created with subscription details.
+  - Step 2 returns HTTP 200 OK with `signature_header` formatted as `sha256=<hmac_hexdigest>`, verifying cryptographic HMAC-SHA256 signing with secret key.
+  - Step 3 returns recorded delivery attempt log with `response_status: 200`, `duration_ms`, and timestamp.
+
+TEST 13.5: Frontend Live Studio "Executive Panel Review" Modal
+- Prerequisites: Frontend running on port 3000, backend running on port 8000.
+- Steps:
+  1. Navigate to: http://localhost:3000/interview-coach
+  2. Click "Start Speaking" or type a response in the transcript area.
+  3. Click "Executive Panel Review" (purple button with Users icon).
+  4. Verify:
+     - `MultiAgentPanelModal` renders smoothly with dark executive styling.
+     - Primary banner highlights Final Consensus Verdict (e.g. Strong Hire 86.1/100) and confidence score.
+     - 3 independent specialist cards render Lead Architect, Principal Systems, and Culture Lead with individual scores, strengths, concerns, and quotes.
+     - Arbitration Debate & Concession Log expands/collapses showing round-by-round arguments and concession points.
+     - "Export Panel JSON" downloads the complete structured evaluation payload.
+
+TEST 13.6: Frontend Employer Profile "Enterprise Settings" Card
+- Prerequisites: Frontend running on port 3000, backend running on port 8000.
+- Steps:
+  1. Navigate to: http://localhost:3000/employer/profile
+  2. Scroll down to "Corporate SSO (SAML 2.0 & OIDC)" and "Outbound ATS Event Webhooks".
+  3. Verify:
+     - Corporate domain, IdP provider, and entity ID inputs load active configuration.
+     - Click "Test Domain Discovery": Discovered Okta provider and authorization URL display in real-time alert.
+     - Fill in new ATS target endpoint URL and click "Add Webhook Endpoint".
+     - Click "Ping Test": Executes simulated HMAC-SHA256 signed delivery and displays HTTP 200 result badge.
+     - Click History icon: Opens Outbound Webhook Delivery Log modal showing delivery timestamp and status.
+
+TEST 13.7: Sprint 11 Automated Pytest Regression Suite
+- Command:
+  python -m pytest backend/test_sprint11_multi_agent_and_enterprise.py services/interview_coach/tests/test_panel_evaluator.py -v
+- Expected Result:
+  9 passed in ~3.0s with 100% pass rate.
+
+===============================================================================
+14. QA ISSUE REPORTING TEMPLATE (FOR YOUR FRIEND TO SUBMIT BUGS)
 ===============================================================================
 
 If any issue, UI bug, or unexpected behavior is found, please copy and fill

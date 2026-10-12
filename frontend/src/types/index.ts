@@ -335,3 +335,84 @@ export interface QuotaBurnRateData {
   renewal_cycle: string;
   status: string;
 }
+
+export interface PanelAgentScorecard {
+  agent_id: string;
+  agent_name: string;
+  avatar_role: string;
+  role_focus: string;
+  initial_score: number;
+  final_score: number;
+  recommendation: string;
+  strengths: string[];
+  concerns: string[];
+  critique_quote: string;
+}
+
+export interface DebateExchange {
+  round_number: number;
+  speaker_agent: string;
+  speaker_title: string;
+  argument: string;
+  concession_or_rebuttal: string;
+  score_adjustment: number;
+}
+
+export interface MultiAgentPanelEvaluationResponse {
+  session_id: string;
+  role: string;
+  question_scenario: string;
+  candidate_answer: string;
+  panel_agents: PanelAgentScorecard[];
+  debate_occurred: boolean;
+  debate_transcripts: DebateExchange[];
+  composite_score: number;
+  committee_recommendation: string;
+  consensus_status: string;
+  consensus_confidence: number;
+  executive_summary: string;
+}
+
+export interface SSODiscoveryResponse {
+  sso_enabled: boolean;
+  org_id?: string;
+  org_name?: string;
+  provider?: string;
+  domain: string;
+  idp_entity_id?: string;
+  idp_sso_url?: string;
+  redirect_url?: string;
+  message?: string;
+}
+
+export interface SSOConfig {
+  org_id: string;
+  org_name?: string;
+  sso_enabled: boolean;
+  sso_provider: string;
+  sso_domain: string;
+  idp_entity_id: string;
+  idp_sso_url: string;
+  idp_metadata_url?: string;
+}
+
+export interface AtsWebhookSubscription {
+  id: string;
+  org_id: string;
+  target_url: string;
+  secret_key: string;
+  event_types: string[];
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface AtsWebhookDelivery {
+  id: string;
+  subscription_id: string;
+  event_type: string;
+  response_status: number;
+  attempt_count: number;
+  delivered_at: string;
+  error_message?: string;
+}
+
