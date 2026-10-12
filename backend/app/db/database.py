@@ -220,6 +220,24 @@ def init_db():
     if "company" not in job_cols:
         cursor.execute("ALTER TABLE jobs ADD COLUMN company TEXT DEFAULT 'Acme HyperScale Systems'")
 
+    cursor.execute("PRAGMA table_info(organizations)")
+    org_cols = [c[1] for c in cursor.fetchall()]
+    if org_cols:
+        if "sso_enabled" not in org_cols:
+            cursor.execute("ALTER TABLE organizations ADD COLUMN sso_enabled BOOLEAN DEFAULT 0")
+        if "sso_provider" not in org_cols:
+            cursor.execute("ALTER TABLE organizations ADD COLUMN sso_provider TEXT DEFAULT 'okta'")
+        if "sso_domain" not in org_cols:
+            cursor.execute("ALTER TABLE organizations ADD COLUMN sso_domain TEXT")
+        if "idp_entity_id" not in org_cols:
+            cursor.execute("ALTER TABLE organizations ADD COLUMN idp_entity_id TEXT")
+        if "idp_sso_url" not in org_cols:
+            cursor.execute("ALTER TABLE organizations ADD COLUMN idp_sso_url TEXT")
+        if "idp_metadata_url" not in org_cols:
+            cursor.execute("ALTER TABLE organizations ADD COLUMN idp_metadata_url TEXT")
+        if "idp_certificate" not in org_cols:
+            cursor.execute("ALTER TABLE organizations ADD COLUMN idp_certificate TEXT")
+
     # Seed mock candidates with verified skills: Python, SQL, AWS, Docker (FR-05)
     default_verified_skills = json.dumps(["Python", "SQL", "AWS", "Docker"])
     cursor.execute("""

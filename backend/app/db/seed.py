@@ -47,6 +47,22 @@ def seed_database_defaults(db: Session = None):
                         conn.execute(text(f"ALTER TABLE subscriptions ADD COLUMN {col_name} {col_type}"))
                 conn.execute(text("UPDATE subscriptions SET active_jobs_limit = -1, evaluations_limit = -1 WHERE plan_id = 'enterprise'"))
                 conn.execute(text("UPDATE subscriptions SET active_jobs_limit = 10, evaluations_limit = 250 WHERE plan_id = 'growth'"))
+
+            if "organizations" in inspector.get_table_names():
+                org_cols = [c["name"] for c in inspector.get_columns("organizations")]
+                org_additions = [
+                    ("sso_enabled", "BOOLEAN DEFAULT 0"),
+                    ("sso_provider", "VARCHAR(64) DEFAULT 'okta'"),
+                    ("sso_domain", "VARCHAR(128)"),
+                    ("idp_entity_id", "VARCHAR(255)"),
+                    ("idp_sso_url", "VARCHAR(500)"),
+                    ("idp_metadata_url", "VARCHAR(500)"),
+                    ("idp_certificate", "TEXT"),
+                ]
+                for col_name, col_type in org_additions:
+                    if col_name not in org_cols:
+                        conn.execute(text(f"ALTER TABLE organizations ADD COLUMN {col_name} {col_type}"))
+                conn.execute(text("UPDATE organizations SET sso_enabled = 1, sso_provider = 'okta', sso_domain = 'acme.com', idp_entity_id = 'https://identity.acme.com', idp_sso_url = 'https://acme.okta.com/app/aspire/sso/saml' WHERE id = 'org-acme' AND (sso_domain IS NULL OR sso_domain = '')"))
         except Exception:
             pass
 
@@ -68,6 +84,11 @@ def seed_database_defaults(db: Session = None):
                     seats_used=14,
                     seats_total=25,
                     status="active",
+                    sso_enabled=True,
+                    sso_provider="okta",
+                    sso_domain="acme.com",
+                    idp_entity_id="https://identity.acme.com",
+                    idp_sso_url="https://acme.okta.com/app/aspire/sso/saml",
                 ),
                 Organization(
                     id="org-apex-univ",

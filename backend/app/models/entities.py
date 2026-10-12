@@ -25,6 +25,16 @@ class Organization(Base):
     seats_used: Mapped[int] = mapped_column(Integer, default=0)
     seats_total: Mapped[int] = mapped_column(Integer, default=25)
     status: Mapped[str] = mapped_column(String(32), default="active")
+    
+    # Enterprise SSO / SAML 2.0 / OIDC Configuration
+    sso_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    sso_provider: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)  # okta, azure_ad, google
+    sso_domain: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, index=True)
+    idp_entity_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    idp_sso_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    idp_metadata_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    idp_certificate: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now(), nullable=False
     )
@@ -373,4 +383,43 @@ class RecruiterNote(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now(), nullable=False
     )
+
+
+class AtsWebhookSubscription(Base):
+    __tablename__ = "ats_webhook_subscriptions"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("organizations.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    target_url: Mapped[str] = mapped_column(String(500), nullable=False)
+    secret_key: Mapped[str] = mapped_column(String(128), nullable=False)
+    event_types: Mapped[str] = mapped_column(
+        Text, default="[\"candidate.shortlisted\", \"scorecard.submitted\", \"credential.minted\", \"interview.panel_evaluated\"]", nullable=False
+    )
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+
+class AtsWebhookDelivery(Base):
+    __tablename__ = "ats_webhook_deliveries"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    subscription_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("ats_webhook_subscriptions.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    event_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    payload_json: Mapped[str] = mapped_column(Text, nullable=False)
+    response_status: Mapped[int] = mapped_column(Integer, default=200, nullable=False)
+    attempt_count: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    delivered_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
 
