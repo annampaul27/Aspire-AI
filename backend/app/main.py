@@ -27,6 +27,7 @@ from app.api.v1.collaboration import router as collaboration_router
 from app.api.v1.interview_coach import router as interview_coach_router
 from app.api.v1.analytics import router as analytics_router
 from app.api.v1.sso import router as sso_router
+from app.api.v1.webhooks_outbound import router as webhooks_outbound_router
 
 scheduler = AsyncIOScheduler()
 
@@ -118,6 +119,16 @@ app.include_router(
 app.include_router(
     sso_router,
     prefix="/api/auth/sso",
+    include_in_schema=False
+)
+app.include_router(
+    webhooks_outbound_router,
+    prefix=f"{settings.API_V1_STR}/webhooks/outbound",
+    tags=["Outbound ATS Event Webhooks"]
+)
+app.include_router(
+    webhooks_outbound_router,
+    prefix="/api/webhooks/outbound",
     include_in_schema=False
 )
 
