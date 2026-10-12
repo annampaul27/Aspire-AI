@@ -13,3 +13,4 @@ export * from "./engine";
 export * from "./collaboration";
 export * from "./interviewCoach";
 export * from "./analytics";
+export * from "./enterprise";
