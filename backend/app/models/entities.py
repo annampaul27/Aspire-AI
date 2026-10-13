@@ -423,3 +423,102 @@ class AtsWebhookDelivery(Base):
     error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
 
+class Cohort(Base):
+    __tablename__ = "cohorts"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("organizations.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    department: Mapped[str] = mapped_column(String(128), default="Computer Science & Engineering", nullable=False)
+    graduation_year: Mapped[int] = mapped_column(Integer, default=2026, nullable=False)
+    target_role: Mapped[str] = mapped_column(String(128), default="Full Stack Software Engineer", nullable=False)
+    student_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    mean_readiness_score: Mapped[float] = mapped_column(Float, default=70.0, nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+    # Relationships
+    students: Mapped[List["CohortStudent"]] = relationship("CohortStudent", back_populates="cohort", cascade="all, delete-orphan")
+    dispatches: Mapped[List["BatchDispatch"]] = relationship("BatchDispatch", back_populates="cohort", cascade="all, delete-orphan")
+
+
+class CohortStudent(Base):
+    __tablename__ = "cohort_students"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    cohort_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("cohorts.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(64), ForeignKey("users.id", ondelete="SET NULL"), index=True, nullable=True
+    )
+    roll_number: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    student_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    student_email: Mapped[str] = mapped_column(String(255), nullable=False)
+    current_readiness: Mapped[int] = mapped_column(Integer, default=70, nullable=False)
+    baseline_readiness: Mapped[int] = mapped_column(Integer, default=55, nullable=False)
+    current_tier: Mapped[str] = mapped_column(String(32), default="bridgeable", nullable=False)
+    deficit_skills_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    enrolled_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+
+    # Relationship
+    cohort: Mapped["Cohort"] = relationship("Cohort", back_populates="students")
+
+
+class BatchDispatch(Base):
+    __tablename__ = "batch_dispatches"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    cohort_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("cohorts.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    dispatched_by: Mapped[Optional[str]] = mapped_column(
+        String(64), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    dispatch_type: Mapped[str] = mapped_column(String(32), default="gap_sprint", nullable=False)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    target_skill: Mapped[str] = mapped_column(String(64), nullable=False)
+    deadline_hours: Mapped[int] = mapped_column(Integer, default=48, nullable=False)
+    total_students: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    completed_students: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    completion_rate: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    mean_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    status: Mapped[str] = mapped_column(String(32), default="active", nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+    # Relationship
+    cohort: Mapped["Cohort"] = relationship("Cohort", back_populates="dispatches")
+
+
+class ProctoringAnomalyLog(Base):
+    __tablename__ = "proctoring_anomaly_logs"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    student_id: Mapped[Optional[str]] = mapped_column(
+        String(64), ForeignKey("users.id", ondelete="SET NULL"), index=True, nullable=True
+    )
+    student_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    cohort_id: Mapped[Optional[str]] = mapped_column(String(64), index=True, nullable=True)
+    session_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    anomaly_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    severity: Mapped[str] = mapped_column(String(32), default="medium", nullable=False)
+    metadata_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    resolved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    recorded_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=func.now(), nullable=False
+    )
+
+
