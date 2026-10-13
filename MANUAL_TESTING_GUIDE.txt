@@ -22,7 +22,8 @@ TABLE OF CONTENTS
 11. TEST SUITE 9: MULTIMODAL AI INTERVIEW COACH (STREAMLIT & NEXT.JS)
 12. TEST SUITE 10: OBSERVABILITY, PROMETHEUS METRICS & FUNNEL ANALYTICS
 13. TEST SUITE 11: MULTI-AGENT PANEL, ENTERPRISE SSO & ATS WEBHOOKS
-14. QA ISSUE REPORTING TEMPLATE
+14. TEST SUITE 12: INSTITUTIONAL TPO COHORTS, BATCH DISPATCH & NAAC ACCREDITATION
+15. QA ISSUE REPORTING TEMPLATE
 
 ================================================================================
 1. LOCAL ENVIRONMENT SETUP & SERVER STARTUP
@@ -707,7 +708,82 @@ TEST 13.7: Sprint 11 Automated Pytest Regression Suite
   9 passed in ~3.0s with 100% pass rate.
 
 ===============================================================================
-14. QA ISSUE REPORTING TEMPLATE (FOR YOUR FRIEND TO SUBMIT BUGS)
+14. TEST SUITE 12: INSTITUTIONAL TPO COHORTS, BATCH DISPATCH & NAAC ACCREDITATION
+===============================================================================
+
+TEST 14.1: TPO Cohorts & Student Roster Explorer
+- Prerequisites: Backend running on port 8000, Frontend running on port 3000.
+- Steps:
+  1. Login as Platform Super Admin or navigate directly to:
+     http://localhost:3000/admin
+  2. Select the first tab: "Cohorts & Batch Dispatch" (GraduationCap icon).
+  3. Verify:
+     - Cohort overview banner displays "B.Tech Computer Science 2026 - Section A".
+     - Department, graduation year, target role, and total enrolled (20 students) are rendered.
+     - Mean Readiness score (75.6% - 78.4%) and tier breakdown (Job-Ready / Bridgeable / Developing) render with color-coded badges.
+     - Common deficit skills tags are listed (e.g., "Distributed Systems", "SQL Indexing").
+     - Click "View Enrolled Student Roster (20)": Expands full roster table with Roll Numbers (CS26-001 to CS26-020), candidate names, baseline vs current scores, net uplift deltas (+22%), and deficit tags.
+
+TEST 14.2: 1-Click Batch Gap Sprint Dispatch
+- Steps:
+  1. On the "Cohorts & Batch Dispatch" tab, click the green "1-Click Batch Dispatch" button.
+  2. Verify:
+     - Modal opens with preselected target cohort.
+     - Choose between "48h Skill Gap Sprint" and "Proctored Assessment".
+     - Fill in Sprint Title (e.g. "Distributed Caching & Redis Idempotency 48h Sprint") and Target Skill ("Distributed Systems").
+     - Set SLA deadline window to 48 hours.
+     - Click "Dispatch to All 20 Students".
+     - Success banner displays in real-time.
+     - The "Active & Historical Batch Dispatches" table updates showing completion progress bar (e.g. 80%) and mean score (82.5%).
+
+TEST 14.3: NAAC Criterion 5 Accreditation Intelligence HUD
+- Steps:
+  1. In http://localhost:3000/admin, click the second tab: "NAAC Accreditation" (Award icon).
+  2. Verify:
+     - Executive banner displays "NAAC Criterion 5 Accreditation Intelligence (Criterion 5.1.3 & 5.2.1)".
+     - Primary KPI grid renders:
+       * Total Enrolled: 20 Students
+       * Baseline Readiness: Pre-intervention cohort mean
+       * Current Readiness: Post-sprint validated mean
+       * Competency Growth: Net uplift delta (+34.7% gain)
+       * Deficit Remediation Rate: 88.0%
+       * Placement-Ready Rate: 85.0%
+     - Tier distribution cards show Job-Ready (85%+ Readiness), Bridgeable (70-84%), and Developing (Under 70%).
+     - Programmatic Domain Growth Matrix renders comparative before-and-after progress bars for:
+       * Distributed Systems & Cloud
+       * Data Structures & Algorithms
+       * Full Stack & API Architecture
+       * System Design & Idempotency
+       * Technical Communication & Rubrics
+
+TEST 14.4: Official NAAC Criterion 5 CSV Stream Export
+- Steps:
+  1. On the "NAAC Accreditation" tab, click the purple "Export NAAC Criterion 5 Audit CSV" button.
+  2. Verify:
+     - Browser triggers immediate file download:
+       `NAAC_Criterion_5_Accreditation_Report_cohort-cse-2026-a.csv`
+     - Open file in Excel / Notepad and verify:
+       * Header blocks: Institution, Department, Cohort, Academic Year, Date.
+       * Columns: Student ID, Roll Number, Name, Email, Department, Baseline Readiness %, Current Readiness %, Uplift Delta %, Tier, Deficit Skills Remediated, Remediation Status.
+       * Verified rows for Aditya Verma, Pooja Sharma, Rohit Mehta, Kavya Nair, etc.
+
+TEST 14.5: Assessment Integrity & Proctoring Anomaly Audit Trail
+- Steps:
+  1. On the "NAAC Accreditation" tab, scroll to the "Assessment Integrity & Proctoring Anomaly Audit Logs" section.
+  2. Verify:
+     - Flagged anomalous sessions are listed with severity badges (Critical, High, Medium, Low).
+     - Event types displayed: `tab_switch`, `rapid_submission`, `multiple_faces_detected`.
+     - Click "Mark Resolved" on an open anomaly:
+       Button changes to "Resolving...", calls `PATCH /api/v1/tpo/proctoring-anomalies/{id}/resolve`, and status updates to "Audited & Cleared" with green checkmark.
+
+TEST 14.6: Sprint 13 Automated Pytest Suite
+- Command:
+  python -m pytest backend/test_sprint13_tpo_cohorts_and_naac.py -v
+- Expected Result:
+  5 passed in ~3.2s with 100% pass rate.
+
+===============================================================================
+15. QA ISSUE REPORTING TEMPLATE (FOR YOUR FRIEND TO SUBMIT BUGS)
 ===============================================================================
 
 If any issue, UI bug, or unexpected behavior is found, please copy and fill
