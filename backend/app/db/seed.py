@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from app.db.session import engine, SessionLocal
 from app.models.entities import (
-    Base, Organization, User, Subscription
+    Base, Organization, User, Subscription,
+    Cohort, CohortStudent, BatchDispatch, ProctoringAnomalyLog,
 )
 from app.core.security import get_password_hash
 
@@ -238,6 +239,122 @@ def seed_database_defaults(db: Session = None):
                 if u_data.get("org_id"):
                     existing.org_id = u_data["org_id"]
         db.commit()
+
+        # 3. Seed University Cohorts (Sprint 13)
+        cohort_id = "cohort-cse-2026-a"
+        existing_cohort = db.query(Cohort).filter(Cohort.id == cohort_id).first()
+        if not existing_cohort:
+            cohort = Cohort(
+                id=cohort_id,
+                org_id="org-apex-univ",
+                name="B.Tech Computer Science 2026 - Section A",
+                department="Computer Science & Engineering",
+                graduation_year=2026,
+                target_role="Full Stack Software Engineer",
+                student_count=20,
+                mean_readiness_score=75.6,
+            )
+            db.add(cohort)
+            db.commit()
+
+            # Seed 20 Cohort Students
+            sample_roster = [
+                ("cand-1", "CS26-001", "Aditya Verma", "aditya.verma@example.com", 74, 52, "bridgeable", '["Redis Caching", "Docker Containerization"]'),
+                ("cand-2", "CS26-002", "Pooja Sharma", "pooja.s@example.com", 91, 72, "job_ready", "[]"),
+                (None, "CS26-003", "Rohit Mehta", "rohit.m@example.com", 82, 60, "bridgeable", '["System Design"]'),
+                (None, "CS26-004", "Kavya Nair", "kavya.nair@example.com", 88, 65, "job_ready", "[]"),
+                (None, "CS26-005", "Rahul Deshmukh", "rahul.d@example.com", 68, 50, "developing", '["FastAPI", "SQL Indexing"]'),
+                (None, "CS26-006", "Sneha Patel", "sneha.p@example.com", 85, 68, "job_ready", "[]"),
+                (None, "CS26-007", "Rohan Iyer", "rohan.i@example.com", 76, 55, "bridgeable", '["AWS Cloud"]'),
+                (None, "CS26-008", "Divya Menon", "divya.m@example.com", 92, 70, "job_ready", "[]"),
+                (None, "CS26-009", "Aravind Swaminathan", "aravind.s@example.com", 64, 48, "developing", '["Data Structures", "Algorithms"]'),
+                (None, "CS26-010", "Meera Krishnan", "meera.k@example.com", 80, 58, "bridgeable", '["Async Python"]'),
+                (None, "CS26-011", "Gaurav Joshi", "gaurav.j@example.com", 71, 52, "bridgeable", '["PostgreSQL"]'),
+                (None, "CS26-012", "Ananya Rao", "ananya.r@example.com", 86, 64, "job_ready", "[]"),
+                (None, "CS26-013", "Vikram Malhotra", "vikram.m@example.com", 67, 45, "developing", '["TypeScript", "React"]'),
+                (None, "CS26-014", "Ishaan Kapoor", "ishaan.k@example.com", 78, 56, "bridgeable", '["Kafka Queues"]'),
+                (None, "CS26-015", "Tanvi Sengupta", "tanvi.s@example.com", 89, 69, "job_ready", "[]"),
+                (None, "CS26-016", "Karan Singhania", "karan.s@example.com", 62, 42, "developing", '["REST API Design"]'),
+                (None, "CS26-017", "Riya Chakraborty", "riya.c@example.com", 84, 63, "bridgeable", '["Microservices"]'),
+                (None, "CS26-018", "Aman Gupta", "aman.g@example.com", 75, 54, "bridgeable", '["Docker Compose"]'),
+                (None, "CS26-019", "Shreya Bhat", "shreya.b@example.com", 90, 71, "job_ready", "[]"),
+                (None, "CS26-020", "Manish Pandey", "manish.p@example.com", 69, 51, "developing", '["Testing & CI/CD"]'),
+            ]
+            for uid, rnum, sname, semail, curr_r, base_r, tier, defs in sample_roster:
+                db.add(CohortStudent(
+                    id=f"cs-{cohort_id}-{rnum}",
+                    cohort_id=cohort_id,
+                    user_id=uid,
+                    roll_number=rnum,
+                    student_name=sname,
+                    student_email=semail,
+                    current_readiness=curr_r,
+                    baseline_readiness=base_r,
+                    current_tier=tier,
+                    deficit_skills_json=defs,
+                ))
+            db.commit()
+
+        # Seed sample Batch Dispatch
+        dispatch_id = "dispatch-sprint-01"
+        existing_dispatch = db.query(BatchDispatch).filter(BatchDispatch.id == dispatch_id).first()
+        if not existing_dispatch:
+            db.add(BatchDispatch(
+                id=dispatch_id,
+                cohort_id=cohort_id,
+                dispatched_by="usr-superuser-root",
+                dispatch_type="gap_sprint",
+                title="Distributed Caching & Redis Idempotency 48h Sprint",
+                target_skill="Distributed Systems",
+                deadline_hours=48,
+                total_students=20,
+                completed_students=16,
+                completion_rate=80.0,
+                mean_score=82.5,
+                status="active",
+            ))
+            db.commit()
+
+        # Seed sample Proctoring Anomalies
+        if db.query(ProctoringAnomalyLog).count() == 0:
+            anomalies = [
+                ProctoringAnomalyLog(
+                    id="anom-01",
+                    student_id="cand-1",
+                    student_name="Aditya Verma",
+                    cohort_id=cohort_id,
+                    session_id="sess-sprint-982",
+                    anomaly_type="tab_switch",
+                    severity="medium",
+                    metadata_json='{"blur_duration_seconds": 14, "switched_to": "external_browser"}',
+                    resolved=False,
+                ),
+                ProctoringAnomalyLog(
+                    id="anom-02",
+                    student_id="cand-2",
+                    student_name="Pooja Sharma",
+                    cohort_id=cohort_id,
+                    session_id="sess-exam-419",
+                    anomaly_type="rapid_submission",
+                    severity="low",
+                    metadata_json='{"time_taken_seconds": 38, "expected_min_seconds": 120}',
+                    resolved=True,
+                ),
+                ProctoringAnomalyLog(
+                    id="anom-03",
+                    student_id=None,
+                    student_name="Rahul Deshmukh",
+                    cohort_id=cohort_id,
+                    session_id="sess-sandbox-102",
+                    anomaly_type="multiple_faces_detected",
+                    severity="critical",
+                    metadata_json='{"face_count": 2, "confidence": 0.94}',
+                    resolved=False,
+                ),
+            ]
+            for a in anomalies:
+                db.add(a)
+            db.commit()
 
     finally:
         if close_at_end:

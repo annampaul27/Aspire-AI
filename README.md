@@ -282,6 +282,41 @@ Following the [Full-Stack & SaaS Architectural Audit](SkillSetu_AI_SaaS_Architec
 
 ---
 
+### ✅ Sprint 13: Institutional TPO Admin Suite, Batch Cohorts & NAAC Accreditation Reporting (Completed)
+- **Branch:** `feat/sprint-13-institutional-tpo-admin-batch-cohorts-and-naac-reporting`
+- **5 Atomic Commits (`d615bec` → `feat/docs commits`)**:
+  1. `docs(plans): initialize sprint 13 institutional tpo admin, batch cohorts and naac reporting plan`
+  2. `feat(tpo): add relational models and seed data for cohorts, dispatches and anomalies`
+  3. `feat(tpo): implement cohort management, 1-click batch dispatch and naac accreditation reporting`
+  4. `feat(frontend): add tpo academic client and typescript type definitions`
+  5. `feat(admin): add institutional cohort batch manager and naac accreditation components`
+- **Key Deliverables:**
+  - **Relational Institutional Models & Seeding (`backend/app/models/entities.py` & `backend/app/db/seed.py`)**:
+    - `Cohort`: University academic sections, departments, graduation years, target industry roles, and mean readiness scores.
+    - `CohortStudent`: Individual student rosters with roll numbers, baseline readiness %, current readiness %, placement tiers (`job_ready`, `bridgeable`, `developing`), and deficit skill tags.
+    - `BatchDispatch`: Record of mass sprint/assessment dispatches with SLA deadlines, student counts, completion rates, and average cohort scores.
+    - `ProctoringAnomalyLog`: Automated test integrity audit logs tracking tab switches, multiple faces detected, audio chatter, and rapid submissions with resolution audit trails.
+  - **TPO REST Endpoints & NAAC Intelligence Engine (`backend/app/api/v1/tpo.py`)**:
+    - `GET /api/v1/tpo/cohorts`: Returns cohorts with tier distributions, student counts, and common deficit skills.
+    - `POST /api/v1/tpo/cohorts`: Creates new university cohorts.
+    - `GET /api/v1/tpo/cohorts/{cohort_id}`: Cohort detail and individual candidate roster with baseline vs current readiness.
+    - `POST /api/v1/tpo/batch-dispatch`: 1-Click dispatch of 48h skill gap sprints or proctored assessments to entire student cohorts, generating candidate in-app notifications.
+    - `GET /api/v1/tpo/batch-dispatches`: Lists active and historical cohort dispatches with real-time completion progress bars.
+    - `GET /api/v1/tpo/naac-report`: Computes **NAAC Criterion 5.1.3 (Capability Enhancement)** and **Criterion 5.2.1 (Placement Progression)** metrics including net competency growth (+34.7% uplift), deficit remediation rate (88.0%), and domain-level competency matrix.
+    - `GET /api/v1/tpo/naac-report/export-csv`: Streams official NAAC auditor CSV export with candidate roll numbers, baseline readiness, uplift deltas, tiers, and remediation status.
+    - `GET /api/v1/tpo/proctoring-anomalies` & `PATCH /api/v1/tpo/proctoring-anomalies/{anomaly_id}/resolve`: Full proctoring anomaly audit trail and resolution management.
+  - **Institutional Academic Admin Portal (`frontend/src/app/admin/`)**:
+    - **`CohortBatchManager.tsx`**: University cohort overview, expandable enrolled student roster with individual readiness scores, and 1-Click Batch Dispatch modal with instant notifications.
+    - **`NaacAccreditationCard.tsx`**: Criterion 5 executive compliance HUD, comparative pre/post-intervention progress bars across 5 core competency domains, 1-click official CSV download, and proctoring anomaly audit log resolver.
+    - Mounted in Admin Portal (`/admin`) under dedicated tabs: **"Cohorts & Batch Dispatch"** and **"NAAC Accreditation"**.
+  - **Full Regression Verification**:
+    - **163/163 Pytest tests passing (100% pass rate)**.
+    - 0 ESLint warnings or errors across the frontend.
+    - 0 Ruff lint errors across backend and services.
+    - Next.js 16 production build: **18/18 static and dynamic routes compiled and optimized cleanly**.
+
+---
+
 ## 📂 Project Architecture
 
 ```

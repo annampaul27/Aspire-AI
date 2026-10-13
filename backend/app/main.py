@@ -28,6 +28,7 @@ from app.api.v1.interview_coach import router as interview_coach_router
 from app.api.v1.analytics import router as analytics_router
 from app.api.v1.sso import router as sso_router
 from app.api.v1.webhooks_outbound import router as webhooks_outbound_router
+from app.api.v1.tpo import router as tpo_router
 
 scheduler = AsyncIOScheduler()
 
@@ -129,6 +130,16 @@ app.include_router(
 app.include_router(
     webhooks_outbound_router,
     prefix="/api/webhooks/outbound",
+    include_in_schema=False
+)
+app.include_router(
+    tpo_router,
+    prefix=f"{settings.API_V1_STR}/tpo",
+    tags=["Institutional TPO & NAAC Accreditation"]
+)
+app.include_router(
+    tpo_router,
+    prefix="/api/tpo",
     include_in_schema=False
 )
 
