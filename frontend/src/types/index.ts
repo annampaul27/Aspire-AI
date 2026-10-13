@@ -416,3 +416,96 @@ export interface AtsWebhookDelivery {
   error_message?: string;
 }
 
+// ---------------------------------------------------------------------------
+// Sprint 13: Institutional TPO Admin Suite, Cohorts & NAAC Accreditation
+// ---------------------------------------------------------------------------
+export interface CohortStudent {
+  id: string;
+  roll_number?: string;
+  student_name: string;
+  student_email: string;
+  user_id?: string;
+  current_readiness: number;
+  baseline_readiness: number;
+  current_tier: string;
+  deficit_skills: string[];
+  enrolled_at?: string;
+}
+
+export interface Cohort {
+  id: string;
+  org_id: string;
+  name: string;
+  department: string;
+  graduation_year: number;
+  target_role: string;
+  student_count: number;
+  mean_readiness_score: number;
+  tier_distribution: {
+    job_ready: number;
+    bridgeable: number;
+    developing: number;
+  };
+  top_deficits: string[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BatchDispatch {
+  id: string;
+  cohort_id: string;
+  cohort_name: string;
+  dispatch_type: "gap_sprint" | "mock_assessment" | string;
+  title: string;
+  target_skill: string;
+  deadline_hours: number;
+  total_students: number;
+  completed_students: number;
+  completion_rate: number;
+  mean_score: number;
+  status: "active" | "completed" | "expired" | string;
+  dispatched_at?: string;
+}
+
+export interface NaacDomainBreakdown {
+  domain: string;
+  baseline_score: number;
+  current_score: number;
+  growth_percentage: number;
+}
+
+export interface NaacAccreditationReport {
+  criterion: string;
+  cohort_id: string;
+  cohort_name: string;
+  department: string;
+  graduation_year: number;
+  total_enrolled: number;
+  baseline_mean_readiness: number;
+  current_mean_readiness: number;
+  competency_growth_percentage: number;
+  deficit_remediation_rate: number;
+  tier_distribution: {
+    job_ready_count: number;
+    bridgeable_count: number;
+    developing_count: number;
+    placement_ready_rate: number;
+  };
+  domain_breakdowns: NaacDomainBreakdown[];
+  accreditation_summary: string;
+}
+
+export interface ProctoringAnomalyRecord {
+  id: string;
+  student_id?: string;
+  student_name: string;
+  cohort_id?: string;
+  session_id: string;
+  anomaly_type: string;
+  severity: "low" | "medium" | "high" | "critical";
+  metadata: Record<string, any>;
+  resolved: boolean;
+  recorded_at?: string;
+}
+
+
