@@ -503,7 +503,7 @@ export interface ProctoringAnomalyRecord {
   session_id: string;
   anomaly_type: string;
   severity: "low" | "medium" | "high" | "critical";
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   resolved: boolean;
   recorded_at?: string;
 }

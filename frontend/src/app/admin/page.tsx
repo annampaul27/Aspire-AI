@@ -6,6 +6,8 @@ import CredentialLedger from "@/components/admin/CredentialLedger";
 import SkillTaxonomyTable from "@/components/admin/SkillTaxonomyTable";
 import OrgManager from "@/components/admin/OrgManager";
 import AnomalyMonitor from "@/components/admin/AnomalyMonitor";
+import CohortBatchManager from "@/components/admin/CohortBatchManager";
+import NaacAccreditationCard from "@/components/admin/NaacAccreditationCard";
 import Link from "next/link";
 import {
   Shield,
@@ -13,12 +15,16 @@ import {
   Building2,
   AlertTriangle,
   KeyRound,
+  GraduationCap,
+  Award,
 } from "lucide-react";
 import RoleGuard from "@/components/auth/RoleGuard";
 
 export default function AdminPage() {
   const { jobs, credentials, organizations, anomalies } = useStore();
-  const [activeTab, setActiveTab] = useState<"ledger" | "taxonomy" | "orgs" | "anomalies">("ledger");
+  const [activeTab, setActiveTab] = useState<
+    "cohorts" | "naac" | "ledger" | "taxonomy" | "orgs" | "anomalies"
+  >("cohorts");
 
   const pendingAnomalies = anomalies.filter((a) => !a.resolved);
 
@@ -100,6 +106,30 @@ export default function AdminPage() {
       <div className="flex items-center justify-between border-b border-gray-800 pb-2.5">
         <div className="flex flex-wrap items-center gap-1">
           <button
+            onClick={() => setActiveTab("cohorts")}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-colors ${
+              activeTab === "cohorts"
+                ? "bg-gray-800 text-white"
+                : "text-gray-400 hover:text-gray-200"
+            }`}
+          >
+            <GraduationCap className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Cohorts & Batch Dispatch</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("naac")}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-colors ${
+              activeTab === "naac"
+                ? "bg-gray-800 text-white"
+                : "text-gray-400 hover:text-gray-200"
+            }`}
+          >
+            <Award className="w-3.5 h-3.5 text-purple-400" />
+            <span>NAAC Accreditation</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab("ledger")}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-colors ${
               activeTab === "ledger"
@@ -155,6 +185,8 @@ export default function AdminPage() {
       </div>
 
       {/* Content */}
+      {activeTab === "cohorts" && <CohortBatchManager />}
+      {activeTab === "naac" && <NaacAccreditationCard />}
       {activeTab === "ledger" && <CredentialLedger />}
       {activeTab === "taxonomy" && <SkillTaxonomyTable />}
       {activeTab === "orgs" && <OrgManager />}
