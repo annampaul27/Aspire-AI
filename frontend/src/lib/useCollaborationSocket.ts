@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { CollaboratorPresence, PipelineStageEvent } from "@/types";
 import { useStore } from "@/lib/store";
+import { getAuthToken } from "@/lib/api/client";
 
 export interface UseCollaborationSocketOptions {
   orgId?: string;
@@ -37,7 +38,7 @@ export function useCollaborationSocket({
       socketRef.current.close();
     }
 
-    const token = localStorage.getItem("aspire_token");
+    const token = getAuthToken();
     const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = process.env.NEXT_PUBLIC_WS_URL || "localhost:8000";
     const wsUrl = `${wsProtocol}//${host}/ws/hiring/${orgId}${token ? `?token=${encodeURIComponent(token)}` : ""}`;
