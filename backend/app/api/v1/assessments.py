@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
+from typing import Any
 import uuid
 import json
 from datetime import datetime
@@ -11,7 +11,7 @@ from app.models.entities import Skill, Assessment, User
 router = APIRouter(prefix="/assessments", tags=["FR-01: Skill Verification & Badges"])
 
 # Curated repository of exactly 20 production-grade questions per skill
-SKILL_QUESTION_BANKS: Dict[str, List[Dict[str, Any]]] = {
+SKILL_QUESTION_BANKS: dict[str, list[dict[str, Any]]] = {
     "postgresql": [
         {
             "id": "q1",
@@ -242,7 +242,7 @@ SKILL_QUESTION_BANKS: Dict[str, List[Dict[str, Any]]] = {
 }
 
 # Reusable fallback for any other skill to ensure exactly 20 questions exist
-DEFAULT_QUESTIONS: List[Dict[str, Any]] = [
+DEFAULT_QUESTIONS: list[dict[str, Any]] = [
     {
         "id": f"gen_q{i}",
         "question": f"Question {i}: Advanced System Design & Architecture scenario analysis. Select the optimal production approach:",
@@ -262,7 +262,7 @@ class GradeSubmissionRequest(BaseModel):
     user_id: str
     skill_id: str
     time_taken_seconds: int = Field(..., ge=0, description="Time taken to finish the test in seconds")
-    answers: Dict[str, int] = Field(..., description="Map of question_id -> selected_option_index")
+    answers: dict[str, int] = Field(..., description="Map of question_id -> selected_option_index")
 
 class BadgeMetadata(BaseModel):
     tier: str
@@ -282,8 +282,8 @@ class GradeResponse(BaseModel):
     time_taken_seconds: int
     time_taken_formatted: str
     verification_status: str  # "Passed" | "Failed"
-    badge_tier: Optional[str] = None  # "Bronze" | "Silver" | "Gold" | "Diamond" | None
-    badge_metadata: Optional[BadgeMetadata] = None
+    badge_tier: str | None = None  # "Bronze" | "Silver" | "Gold" | "Diamond" | None
+    badge_metadata: BadgeMetadata | None = None
     user_class: str  # "Fresher" | "Experienced"
     feedback: str
     threshold_applied: int = 70
@@ -384,7 +384,7 @@ async def grade_assessment(submission: GradeSubmissionRequest, db: Session = Dep
         })
 
     total_questions = 20
-    score_percentage = int(round((correct_count / total_questions) * 100))
+    score_percentage = round((correct_count / total_questions) * 100)
 
     # Threshold Check: >= 70% passes and receives Badge Tier, < 70% fails
     is_passed = score_percentage >= 70

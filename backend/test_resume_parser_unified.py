@@ -11,17 +11,17 @@ def test_resume_parser_extracts_real_custom_candidate_data():
     extracts Elena's actual name, email, and skills — NOT the static mock 'Aditya Verma' with 'Nexus Scale Labs'.
     """
     custom_resume_content = (
-        "Elena Rostova\n"
-        "elena.rostova@techinnovate.io\n"
-        "+91 91234 56789\n"
-        "https://github.com/elenarostova\n"
-        "https://linkedin.com/in/elenarostova\n"
-        "Indian Institute of Technology (IIT) Delhi\n"
-        "Skills: Golang, Rust, Kubernetes, Docker, PostgreSQL, Distributed Systems, Microservices\n"
-        "Professional Experience at CloudScale Dynamics:\n"
-        "- Architected high-availability distributed consensus cluster with Raft protocol in Golang.\n"
-        "- Reduced container cold-start latency by 55% using Alpine multi-stage builds.\n"
-    ).encode("utf-8")
+        b"Elena Rostova\n"
+        b"elena.rostova@techinnovate.io\n"
+        b"+91 91234 56789\n"
+        b"https://github.com/elenarostova\n"
+        b"https://linkedin.com/in/elenarostova\n"
+        b"Indian Institute of Technology (IIT) Delhi\n"
+        b"Skills: Golang, Rust, Kubernetes, Docker, PostgreSQL, Distributed Systems, Microservices\n"
+        b"Professional Experience at CloudScale Dynamics:\n"
+        b"- Architected high-availability distributed consensus cluster with Raft protocol in Golang.\n"
+        b"- Reduced container cold-start latency by 55% using Alpine multi-stage builds.\n"
+    )
 
     files = {"file": ("elena_resume.pdf", io.BytesIO(custom_resume_content), "application/pdf")}
     response = client.post("/api/v1/resume/parse", files=files)

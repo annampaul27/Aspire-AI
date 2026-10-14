@@ -1,7 +1,7 @@
 import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Any
+from typing import Any
 from app.core.config import settings
 
 def get_password_hash(password: str) -> str:
@@ -23,10 +23,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_access_token(
     subject: str,
     role: str,
-    org_id: Optional[str] = None,
-    email: Optional[str] = None,
-    name: Optional[str] = None,
-    expires_delta: Optional[timedelta] = None
+    org_id: str | None = None,
+    email: str | None = None,
+    name: str | None = None,
+    expires_delta: timedelta | None = None
 ) -> str:
     """Creates a cryptographically signed JWT token with role and org claims."""
     if expires_delta:
@@ -49,7 +49,7 @@ def create_access_token(
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-def decode_access_token(token: str) -> Optional[dict]:
+def decode_access_token(token: str) -> dict | None:
     """Decodes and validates a JWT token."""
     try:
         payload = jwt.decode(

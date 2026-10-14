@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any
+from typing import Any
 from app.models.ats import ResumeSchema, JDSchema
 
 # Initialize ChromaDB Persistent Client with safe fallback
@@ -9,8 +9,8 @@ _resume_collection = None
 _jd_collection = None
 
 # In-memory fallback if chromadb is not yet loaded
-_in_memory_resumes: Dict[str, Dict[str, Any]] = {}
-_in_memory_jds: Dict[str, Dict[str, Any]] = {}
+_in_memory_resumes: dict[str, dict[str, Any]] = {}
+_in_memory_jds: dict[str, dict[str, Any]] = {}
 
 def get_chroma_collections():
     global _chroma_client, _resume_collection, _jd_collection

@@ -1,6 +1,6 @@
 import uuid
 from fastapi import APIRouter, HTTPException, status, Depends
-from typing import List, Dict, Any
+from typing import Any
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -111,7 +111,7 @@ async def login(req: LoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 async def get_my_profile(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: dict[str, Any] = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -223,7 +223,7 @@ async def register(req: RegisterRequest, db: Session = Depends(get_db)):
         organization=org_info,
     )
 
-@router.get("/organizations", response_model=List[OrganizationResponse])
+@router.get("/organizations", response_model=list[OrganizationResponse])
 async def list_organizations(db: Session = Depends(get_db)):
     """
     Returns public tenant organizations for the login and onboarding selectors.

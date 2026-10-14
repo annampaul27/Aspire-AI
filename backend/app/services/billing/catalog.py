@@ -1,4 +1,3 @@
-from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
 class PlanLimits(BaseModel):
@@ -18,11 +17,11 @@ class PlanDefinition(BaseModel):
     price_usd_monthly: float
     price_usd_annual: float
     limits: PlanLimits
-    features: List[str]
-    badge: Optional[str] = None
+    features: list[str]
+    badge: str | None = None
     is_popular: bool = False
 
-SAAS_PLANS: Dict[str, PlanDefinition] = {
+SAAS_PLANS: dict[str, PlanDefinition] = {
     "student_free": PlanDefinition(
         id="student_free",
         name="Student Free",
@@ -80,7 +79,7 @@ SAAS_PLANS: Dict[str, PlanDefinition] = {
         id="starter",
         name="Starter / Bootstrapped",
         audience="employer",
-        description="Ideal for early-stage startups hiring 1–3 high-performing core engineers.",
+        description="Ideal for early-stage startups hiring 1-3 high-performing core engineers.",
         price_inr_monthly=4999,
         price_inr_annual=47990,
         price_usd_monthly=59.0,
@@ -161,10 +160,10 @@ SAAS_PLANS: Dict[str, PlanDefinition] = {
     ),
 }
 
-def get_plan_by_id(plan_id: str) -> Optional[PlanDefinition]:
+def get_plan_by_id(plan_id: str) -> PlanDefinition | None:
     return SAAS_PLANS.get(plan_id.lower())
 
-def list_all_plans(audience: Optional[str] = None) -> List[PlanDefinition]:
+def list_all_plans(audience: str | None = None) -> list[PlanDefinition]:
     plans = list(SAAS_PLANS.values())
     if audience:
         return [p for p in plans if p.audience == audience or audience == "all"]

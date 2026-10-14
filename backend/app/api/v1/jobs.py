@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks, status, Depends
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import Any
 import uuid
 import json
 import logging
@@ -18,22 +18,22 @@ logger.setLevel(logging.INFO)
 router = APIRouter(tags=["FR-05: Job Ingestion & Real-Time Matching"])
 
 class IncomingJobPayload(BaseModel):
-    id: Optional[str] = None
+    id: str | None = None
     title: str
-    company: Optional[str] = "Acme HyperScale Systems"
-    org_id: Optional[str] = "org-acme"
-    department: Optional[str] = "Platform Engineering"
-    location: Optional[str] = "Bengaluru / Remote"
-    type: Optional[str] = "Full-Time"
-    salary_range: Optional[str] = "₹28,00,000 - ₹38,00,000"
-    experience_min_years: Optional[float] = 2.0
-    required_skills: List[str]
-    optional_skills: Optional[List[str]] = []
-    description: Optional[str] = "Exciting high-growth engineering role requiring deep technical expertise."
-    pass_threshold: Optional[int] = 85
-    threshold: Optional[float] = 80.0
+    company: str | None = "Acme HyperScale Systems"
+    org_id: str | None = "org-acme"
+    department: str | None = "Platform Engineering"
+    location: str | None = "Bengaluru / Remote"
+    type: str | None = "Full-Time"
+    salary_range: str | None = "₹28,00,000 - ₹38,00,000"
+    experience_min_years: float | None = 2.0
+    required_skills: list[str]
+    optional_skills: list[str] | None = []
+    description: str | None = "Exciting high-growth engineering role requiring deep technical expertise."
+    pass_threshold: int | None = 85
+    threshold: float | None = 80.0
 
-def run_job_matching_for_all_candidates(job: Dict[str, Any]):
+def run_job_matching_for_all_candidates(job: dict[str, Any]):
     """
     Asynchronous matching task:
     Runs the Matching Engine comparing incoming job's required skills against all candidate profiles.
@@ -184,7 +184,7 @@ async def ingest_incoming_job(
     }
 
 @router.get("/match-feed")
-async def get_60_jd_match_feed(candidate_skills: Optional[str] = "Python,FastAPI,SQL,Docker"):
+async def get_60_jd_match_feed(candidate_skills: str | None = "Python,FastAPI,SQL,Docker"):
     """
     Evaluates candidate skills against the 60 curated industry Job Descriptions in job_descriptions_60.json.
     Computes match percentage, missing high-ROI skills, and salary bands.
@@ -207,7 +207,7 @@ async def get_60_jd_match_feed(candidate_skills: Optional[str] = "Python,FastAPI
     jds = []
     if jd_file:
         try:
-            with open(jd_file, "r", encoding="utf-8") as f:
+            with open(jd_file, encoding="utf-8") as f:
                 jds = json.load(f)
         except Exception as e:
             logger.error(f"Error loading {jd_file}: {e}")

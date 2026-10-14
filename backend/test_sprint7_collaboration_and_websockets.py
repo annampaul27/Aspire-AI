@@ -134,7 +134,7 @@ def setup_collaboration_test_env():
         db.close()
 
 
-def get_token_for(user_id: str, email: str, role: str, org_id: str = None) -> str:
+def get_token_for(user_id: str, email: str, role: str, org_id: str | None = None) -> str:
     return create_access_token(
         subject=user_id,
         email=email,

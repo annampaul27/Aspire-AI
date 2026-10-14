@@ -3,7 +3,7 @@ import io
 import json
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel, Field
@@ -30,8 +30,8 @@ class CohortCreateRequest(BaseModel):
     name: str = Field(..., description="Cohort designation, e.g. B.Tech Computer Science 2026 - Section A")
     department: str = Field(..., description="Academic department")
     graduation_year: int = Field(2026, description="Graduation batch year")
-    target_role: Optional[str] = Field("Software Engineer", description="Target industry role")
-    org_id: Optional[str] = Field("org-apex-univ", description="Institution organization ID")
+    target_role: str | None = Field("Software Engineer", description="Target industry role")
+    org_id: str | None = Field("org-apex-univ", description="Institution organization ID")
 
 
 class BatchDispatchRequest(BaseModel):
@@ -43,19 +43,19 @@ class BatchDispatchRequest(BaseModel):
 
 
 class ProctoringAnomalyCreateRequest(BaseModel):
-    student_id: Optional[str] = Field(None, description="Candidate User ID if identified")
+    student_id: str | None = Field(None, description="Candidate User ID if identified")
     student_name: str = Field(..., description="Student full name")
-    cohort_id: Optional[str] = Field(None, description="Cohort ID if associated")
+    cohort_id: str | None = Field(None, description="Cohort ID if associated")
     session_id: str = Field(..., description="Proctored session identifier")
     anomaly_type: str = Field(..., description="e.g. tab_switch, audio_chatter_detected, multiple_faces_detected")
     severity: str = Field("medium", description="'low', 'medium', 'high', 'critical'")
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Metadata payload")
+    metadata: dict[str, Any] | None = Field(default_factory=dict, description="Metadata payload")
 
 
 # -------------------------------------------------------------------------
 # Helper Functions
 # -------------------------------------------------------------------------
-def _format_cohort_summary(cohort: Cohort) -> Dict[str, Any]:
+def _format_cohort_summary(cohort: Cohort) -> dict[str, Any]:
     students = cohort.students or []
     count = len(students) if students else cohort.student_count
     
@@ -70,7 +70,7 @@ def _format_cohort_summary(cohort: Cohort) -> Dict[str, Any]:
     developing = sum(1 for s in students if s.current_readiness < 70)
     
     # Extract top deficit skills across cohort
-    deficit_counts: Dict[str, int] = {}
+    deficit_counts: dict[str, int] = {}
     for s in students:
         try:
             skills = json.loads(s.deficit_skills_json) if s.deficit_skills_json else []
@@ -107,7 +107,7 @@ def _format_cohort_summary(cohort: Cohort) -> Dict[str, Any]:
 # -------------------------------------------------------------------------
 @router.get("/cohorts")
 def list_cohorts(
-    org_id: Optional[str] = Query(None, description="Filter cohorts by institution organization ID"),
+    org_id: str | None = Query(None, description="Filter cohorts by institution organization ID"),
     db: Session = Depends(get_db),
 ):
     query = select(Cohort)
@@ -264,7 +264,7 @@ def dispatch_batch_sprint(
 
 @router.get("/batch-dispatches")
 def list_batch_dispatches(
-    cohort_id: Optional[str] = Query(None, description="Filter by cohort ID"),
+    cohort_id: str | None = Query(None, description="Filter by cohort ID"),
     db: Session = Depends(get_db),
 ):
     query = select(BatchDispatch)
@@ -302,7 +302,7 @@ def list_batch_dispatches(
 # -------------------------------------------------------------------------
 @router.get("/naac-report")
 def get_naac_accreditation_report(
-    cohort_id: Optional[str] = Query("cohort-cse-2026-a", description="Cohort to audit"),
+    cohort_id: str | None = Query("cohort-cse-2026-a", description="Cohort to audit"),
     db: Session = Depends(get_db),
 ):
     cohort = db.query(Cohort).filter(Cohort.id == cohort_id).first()
@@ -372,7 +372,7 @@ def get_naac_accreditation_report(
 
 @router.get("/naac-report/export-csv")
 def export_naac_report_csv(
-    cohort_id: Optional[str] = Query("cohort-cse-2026-a", description="Cohort to export"),
+    cohort_id: str | None = Query("cohort-cse-2026-a", description="Cohort to export"),
     db: Session = Depends(get_db),
 ):
     cohort = db.query(Cohort).filter(Cohort.id == cohort_id).first()
@@ -460,8 +460,8 @@ def export_naac_report_csv(
 # -------------------------------------------------------------------------
 @router.get("/proctoring-anomalies")
 def list_proctoring_anomalies(
-    cohort_id: Optional[str] = Query(None, description="Filter by cohort ID"),
-    resolved: Optional[bool] = Query(None, description="Filter by resolution status"),
+    cohort_id: str | None = Query(None, description="Filter by cohort ID"),
+    resolved: bool | None = Query(None, description="Filter by resolution status"),
     db: Session = Depends(get_db),
 ):
     query = select(ProctoringAnomalyLog).order_by(ProctoringAnomalyLog.recorded_at.desc())

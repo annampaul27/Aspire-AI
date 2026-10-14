@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from pydantic import BaseModel
-from typing import Dict, Any, List, Optional
+from typing import Any
 import uuid
 import json
 from datetime import datetime
@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.entities import AtsResume, User
 from app.services.ats.parser_service import extract_text, parse_resume, convert_resume_to_ats_payload
+import contextlib
 
 router = APIRouter(prefix="/resume", tags=["FR-02: ATS Resume Parsing & Editing"])
 
@@ -17,14 +18,14 @@ class PersonalInfo(BaseModel):
     email: str
     phone: str
     location: str
-    linkedin_url: Optional[str] = None
-    github_url: Optional[str] = None
-    portfolio_url: Optional[str] = None
+    linkedin_url: str | None = None
+    github_url: str | None = None
+    portfolio_url: str | None = None
 
 class CategorizedSkills(BaseModel):
-    core_technical: List[str]
-    frameworks_and_tools: List[str]
-    soft_skills: List[str]
+    core_technical: list[str]
+    frameworks_and_tools: list[str]
+    soft_skills: list[str]
 
 class WorkExperienceItem(BaseModel):
     company: str
@@ -33,21 +34,21 @@ class WorkExperienceItem(BaseModel):
     end_date: str
     current: bool = False
     location: str
-    bullet_points: List[str]
+    bullet_points: list[str]
 
 class EducationItem(BaseModel):
     institution: str
     degree: str
     field_of_study: str
     grad_year: int
-    gpa: Optional[str] = None
+    gpa: str | None = None
 
 class ProjectItem(BaseModel):
     title: str
     description: str
-    technologies: List[str]
-    github_url: Optional[str] = None
-    live_url: Optional[str] = None
+    technologies: list[str]
+    github_url: str | None = None
+    live_url: str | None = None
 
 class ATSMetadata(BaseModel):
     ats_score: int
@@ -60,29 +61,27 @@ class ATSResumePayload(BaseModel):
     professional_summary: str
     user_class: str = "Experienced"  # "Fresher" | "Experienced"
     skills: CategorizedSkills
-    work_experience: List[WorkExperienceItem]
-    education: List[EducationItem]
-    projects: List[ProjectItem]
-    certifications: List[str]
+    work_experience: list[WorkExperienceItem]
+    education: list[EducationItem]
+    projects: list[ProjectItem]
+    certifications: list[str]
     ats_metadata: ATSMetadata
 
 class SaveProfileRequest(BaseModel):
     user_id: str
     user_class: str
-    file_name: Optional[str] = "Uploaded_Resume.pdf"
-    resume_data: Dict[str, Any]
+    file_name: str | None = "Uploaded_Resume.pdf"
+    resume_data: dict[str, Any]
 
-def mock_ai_parse_pdf_content(file_bytes: bytes, filename: str) -> Dict[str, Any]:
+def mock_ai_parse_pdf_content(file_bytes: bytes, filename: str) -> dict[str, Any]:
     """
     Mock AI parsing utility simulating spatial layout analysis and Gemini entity extraction.
     Analyzes raw text streams from PDF and outputs an ATS-compliant, deterministic JSON schema.
     """
     # Read text if simple ASCII strings exist in the PDF stream
     text_content = ""
-    try:
+    with contextlib.suppress(Exception):
         text_content = file_bytes.decode("latin-1", errors="ignore")
-    except Exception:
-        pass
 
     # Detect if user might be Fresher or Experienced from heuristics
     is_fresher = ("intern" in text_content.lower() or "student" in text_content.lower() or "b.tech" in text_content.lower()) and "years of experience" not in text_content.lower()
@@ -163,7 +162,7 @@ def mock_ai_parse_pdf_content(file_bytes: bytes, filename: str) -> Dict[str, Any
             }
         ],
         "certifications": [
-            "AWS Certified Solutions Architect – Associate",
+            "AWS Certified Solutions Architect - Associate",
             "PostgreSQL Certified Query Performance Tuning Specialist"
         ],
         "ats_metadata": {

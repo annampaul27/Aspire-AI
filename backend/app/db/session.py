@@ -1,5 +1,5 @@
 import os
-from typing import Generator
+from collections.abc import Generator
 from contextlib import contextmanager
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, Session

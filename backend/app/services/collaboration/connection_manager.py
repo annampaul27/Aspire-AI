@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any
 from fastapi import WebSocket
 
 logger = logging.getLogger(__name__)
@@ -14,14 +14,14 @@ class HiringCollaborationManager:
 
     def __init__(self):
         # org_id -> {WebSocket: user_info_dict}
-        self.active_rooms: Dict[str, Dict[WebSocket, Dict[str, Any]]] = {}
+        self.active_rooms: dict[str, dict[WebSocket, dict[str, Any]]] = {}
         self._lock = asyncio.Lock()
 
     async def connect(
         self,
         websocket: WebSocket,
         org_id: str,
-        user_info: Optional[Dict[str, Any]] = None,
+        user_info: dict[str, Any] | None = None,
     ) -> None:
         """
         Accepts the WebSocket connection, registers it to the tenant room,
@@ -87,17 +87,17 @@ class HiringCollaborationManager:
         self,
         org_id: str,
         event_type: str,
-        data: Dict[str, Any],
-        exclude_socket: Optional[WebSocket] = None,
+        data: dict[str, Any],
+        exclude_socket: WebSocket | None = None,
     ) -> None:
         """
         Broadcasts a structured JSON event to all active sockets connected to org_id.
         """
-        sockets_to_send: List[WebSocket] = []
+        sockets_to_send: list[WebSocket] = []
         async with self._lock:
             if org_id in self.active_rooms:
                 sockets_to_send = [
-                    ws for ws in self.active_rooms[org_id].keys() if ws != exclude_socket
+                    ws for ws in self.active_rooms[org_id] if ws != exclude_socket
                 ]
 
         if not sockets_to_send:
@@ -110,7 +110,7 @@ class HiringCollaborationManager:
             "timestamp": datetime.datetime.utcnow().isoformat(),
         }
 
-        dead_sockets: List[WebSocket] = []
+        dead_sockets: list[WebSocket] = []
         for ws in sockets_to_send:
             try:
                 await ws.send_json(payload)
@@ -126,7 +126,7 @@ class HiringCollaborationManager:
                     if not self.active_rooms[org_id]:
                         del self.active_rooms[org_id]
 
-    def get_active_collaborators(self, org_id: str) -> List[Dict[str, Any]]:
+    def get_active_collaborators(self, org_id: str) -> list[dict[str, Any]]:
         """
         Returns a list of distinct active collaborator metadata dictionaries in this tenant.
         """
@@ -134,7 +134,7 @@ class HiringCollaborationManager:
             return []
         # Return distinct users
         seen_user_ids = set()
-        unique_users: List[Dict[str, Any]] = []
+        unique_users: list[dict[str, Any]] = []
         for user_meta in self.active_rooms[org_id].values():
             uid = user_meta.get("user_id")
             if uid and uid not in seen_user_ids:

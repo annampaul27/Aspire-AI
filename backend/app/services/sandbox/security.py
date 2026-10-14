@@ -1,6 +1,6 @@
 import ast
 import re
-from typing import Tuple, Optional, Set
+from typing import ClassVar
 
 
 class SecurityViolationError(Exception):
@@ -14,25 +14,25 @@ class AstSecurityAnalyzer:
     to detect and block dangerous system calls, malicious imports, and unauthorized execution.
     """
 
-    FORBIDDEN_MODULES: Set[str] = {
+    FORBIDDEN_MODULES: ClassVar[set[str]] = {
         "os", "sys", "subprocess", "shutil", "socket", "pty", "pathlib",
         "ctypes", "importlib", "pickle", "shelve", "multiprocessing",
         "threading", "signal", "posix", "nt", "builtins", "code",
         "_thread", "ptyprocess", "termios", "winreg"
     }
 
-    FORBIDDEN_CALLS: Set[str] = {
+    FORBIDDEN_CALLS: ClassVar[set[str]] = {
         "eval", "exec", "open", "__import__", "compile", "getattr",
         "setattr", "delattr", "globals", "locals", "breakpoint", "input"
     }
 
-    FORBIDDEN_ATTRIBUTES: Set[str] = {
+    FORBIDDEN_ATTRIBUTES: ClassVar[set[str]] = {
         "__subclasses__", "__globals__", "__code__", "__builtins__",
         "__bases__", "__mro__", "__import__", "__loader__", "__spec__",
         "func_globals", "func_code", "gi_frame", "cr_frame"
     }
 
-    FORBIDDEN_SQL_PATTERNS = [
+    FORBIDDEN_SQL_PATTERNS: ClassVar[list[str]] = [
         r"\battach\s+database\b",
         r"\bdetach\s+database\b",
         r"\bload_extension\b",
@@ -73,16 +73,14 @@ class AstSecurityAnalyzer:
 
         def visit_Call(self, node: ast.Call):
             # Check function call name
-            if isinstance(node.func, ast.Name):
-                if node.func.id in AstSecurityAnalyzer.FORBIDDEN_CALLS:
-                    self.violations.append(
-                        f"Forbidden function call '{node.func.id}()' detected at line {node.lineno}."
-                    )
-            elif isinstance(node.func, ast.Attribute):
-                if node.func.attr in AstSecurityAnalyzer.FORBIDDEN_CALLS:
-                    self.violations.append(
-                        f"Forbidden function call '{node.func.attr}()' detected at line {node.lineno}."
-                    )
+            if isinstance(node.func, ast.Name) and node.func.id in AstSecurityAnalyzer.FORBIDDEN_CALLS:
+                self.violations.append(
+                    f"Forbidden function call '{node.func.id}()' detected at line {node.lineno}."
+                )
+            elif isinstance(node.func, ast.Attribute) and node.func.attr in AstSecurityAnalyzer.FORBIDDEN_CALLS:
+                self.violations.append(
+                    f"Forbidden function call '{node.func.attr}()' detected at line {node.lineno}."
+                )
             self.generic_visit(node)
 
         def visit_Attribute(self, node: ast.Attribute):
@@ -93,7 +91,7 @@ class AstSecurityAnalyzer:
             self.generic_visit(node)
 
     @classmethod
-    def validate_code(cls, code: str, language: str = "python") -> Tuple[bool, Optional[str]]:
+    def validate_code(cls, code: str, language: str = "python") -> tuple[bool, str | None]:
         """
         Validates candidate code against security constraints.
         Returns:
@@ -110,14 +108,14 @@ class AstSecurityAnalyzer:
         return cls._validate_python(code)
 
     @classmethod
-    def _validate_python(cls, code: str) -> Tuple[bool, Optional[str]]:
+    def _validate_python(cls, code: str) -> tuple[bool, str | None]:
         try:
             tree = ast.parse(code)
         except SyntaxError as e:
             # Let runner or caller know about syntax issues
             return False, f"Syntax Error: {e.msg} at line {e.lineno}."
         except Exception as e:
-            return False, f"AST Parsing Error: {str(e)}"
+            return False, f"AST Parsing Error: {e!s}"
 
         visitor = cls._SecurityVisitor()
         visitor.visit(tree)
@@ -128,7 +126,7 @@ class AstSecurityAnalyzer:
         return True, None
 
     @classmethod
-    def _validate_sql(cls, code: str) -> Tuple[bool, Optional[str]]:
+    def _validate_sql(cls, code: str) -> tuple[bool, str | None]:
         code_lower = code.lower()
         for pattern in cls.FORBIDDEN_SQL_PATTERNS:
             if re.search(pattern, code_lower):

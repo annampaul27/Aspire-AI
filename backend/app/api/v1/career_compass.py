@@ -5,7 +5,7 @@ Feature modules authored by Jayasree A B (branch: features)
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 from features.career_roadmap import prepare_career_roadmap, get_career_roadmap_requirements
 from features.personalized_roadmap import generate_personalized_roadmap
@@ -36,13 +36,13 @@ router = APIRouter()
 # -------------------------------------------------------------
 class RoadmapRequest(BaseModel):
     target_role: str = Field(..., examples=["Backend Engineer"])
-    current_skills: List[str] = Field(..., examples=["Python", "FastAPI", "SQL"])
-    skill_gaps: List[Dict[str, Any]] = Field(
+    current_skills: list[str] = Field(..., examples=["Python", "FastAPI", "SQL"])
+    skill_gaps: list[dict[str, Any]] = Field(
         ...,
         examples=[{"skill": "PostgreSQL Optimization", "priority": "High"}]
     )
-    candidate_profile: Optional[str] = None
-    weekly_hours: Optional[int] = 5
+    candidate_profile: str | None = None
+    weekly_hours: int | None = 5
 
 
 @router.post("/roadmap", summary="Prepare 90-Day Career Roadmap (Jayasree A B & rdnk2004)")
@@ -88,7 +88,7 @@ def get_roadmap_schema():
 class GithubAnalysisRequest(BaseModel):
     repository_name: str = Field(..., json_schema_extra={"example": "distributed-cache"})
     repository_url: str = Field(..., json_schema_extra={"example": "https://github.com/developer/distributed-cache"})
-    files: List[str] = Field(default_factory=list, json_schema_extra={"example": ["main.go", "cache.go", "README.md"]})
+    files: list[str] = Field(default_factory=list, json_schema_extra={"example": ["main.go", "cache.go", "README.md"]})
     file_content: str = Field(default="", json_schema_extra={"example": "package main\n\nfunc main() {}"})
 
 
@@ -139,7 +139,7 @@ def get_interview_question(req: InterviewQuestionRequest):
 class InterviewEvalRequest(BaseModel):
     question_text: str = Field(..., examples=["How do you handle database indexing for large tables?"])
     candidate_answer: str = Field(..., examples=["I use B-Tree indexes on high-cardinality query columns and avoid indexing write-heavy tables."])
-    role: Optional[str] = Field(default="Senior Backend Engineer", examples=["Senior Backend Engineer"])
+    role: str | None = Field(default="Senior Backend Engineer", examples=["Senior Backend Engineer"])
 
 
 @router.post("/interview/evaluate", summary="Evaluate Interview Response with Dynamic Rubric (Jayasree A B & rdnk2004)")
@@ -178,7 +178,7 @@ def evaluate_interview_response(req: InterviewEvalRequest):
 @router.get("/job-market", summary="Analyze Job Market Demand (Jayasree A B)")
 def get_job_market(
     role_title: str = Query(..., examples=["Full Stack Developer"]),
-    location: Optional[str] = Query(None, examples=["Remote"]),
+    location: str | None = Query(None, examples=["Remote"]),
 ):
     try:
         prep = prepare_job_market_analysis(role_title=role_title, location=location)
@@ -200,7 +200,7 @@ def get_job_market(
 # 5. Portfolio Builder
 # -------------------------------------------------------------
 class PortfolioRequest(BaseModel):
-    candidate_data: Dict[str, Any] = Field(..., json_schema_extra={"example": {"name": "Alex", "title": "Software Engineer"}})
+    candidate_data: dict[str, Any] = Field(..., json_schema_extra={"example": {"name": "Alex", "title": "Software Engineer"}})
     color_theme: str = "cyan"
     mode: str = "Dark"
     layout_style: str = "Classic"
@@ -228,7 +228,7 @@ def get_portfolio_prep(req: PortfolioRequest):
 # -------------------------------------------------------------
 class ResumeDeepAnalysisRequest(BaseModel):
     resume_text: str = Field(..., json_schema_extra={"example": "Senior Developer with 4 years experience in Python and PostgreSQL."})
-    job_description: Optional[str] = None
+    job_description: str | None = None
 
 
 @router.post("/resume-deep-analysis", summary="Prepare Deep Resume Analysis (Jayasree A B)")
@@ -248,7 +248,7 @@ def analyze_resume_deep(req: ResumeDeepAnalysisRequest):
 class SkillGapPrepRequest(BaseModel):
     candidate_profile: str = Field(..., json_schema_extra={"example": "Proficient in Python, basic Docker, no Kubernetes"})
     target_role: str = Field(..., json_schema_extra={"example": "DevOps Engineer"})
-    job_description: Optional[str] = None
+    job_description: str | None = None
 
 
 @router.post("/skill-gap-analysis", summary="Prepare Competency Area Skill Gap (Jayasree A B)")
@@ -267,13 +267,13 @@ def prepare_skill_gap(req: SkillGapPrepRequest):
 # 8. Personalized Roadmap Generation
 # -------------------------------------------------------------
 class PersonalizedRoadmapRequest(BaseModel):
-    skill_gaps: List[Any] = Field(
+    skill_gaps: list[Any] = Field(
         ...,
         description="List of skill strings or gap objects (e.g. [{'skill': 'Python', 'current_level': 'Beginner'}])",
         examples=[[{"skill": "Python", "current_level": "Beginner", "required_level": "Advanced"}, "AWS"]]
     )
-    target_role: Optional[str] = Field("Backend Engineer", description="Target job role")
-    weekly_hours: Optional[int] = Field(5, description="Weekly hours available for study")
+    target_role: str | None = Field("Backend Engineer", description="Target job role")
+    weekly_hours: int | None = Field(5, description="Weekly hours available for study")
 
 
 @router.post("/personalized-roadmap", summary="Generate Personalized Roadmap (Jayasree A B)")

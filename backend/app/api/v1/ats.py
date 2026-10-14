@@ -1,6 +1,5 @@
 import uuid
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from typing import Optional
 from app.models.ats import (
     ResumeSchema,
     JDSchema,
@@ -52,7 +51,7 @@ async def api_parse_resume(file: UploadFile = File(...)):
         
         return resume_data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Resume parsing error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Resume parsing error: {e!s}")
 
 @router.post("/parse-jd", response_model=JDSchema)
 async def api_parse_jd(request: JDRequest):
@@ -69,12 +68,12 @@ async def api_parse_jd(request: JDRequest):
         
         return jd_data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"JD parsing error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"JD parsing error: {e!s}")
 
 @router.post("/compare", response_model=ComparisonResultSchema)
 async def api_compare(
-    resume_file: Optional[UploadFile] = File(None),
-    resume_text: Optional[str] = Form(None),
+    resume_file: UploadFile | None = File(None),
+    resume_text: str | None = Form(None),
     jd_text: str = Form(...)
 ):
     """
@@ -105,7 +104,7 @@ async def api_compare(
         
         return comparison_result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Comparison error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Comparison error: {e!s}")
 
 @router.post("/query/resumes")
 async def api_query_resumes(request: QueryRequest):
@@ -115,7 +114,7 @@ async def api_query_resumes(request: QueryRequest):
     try:
         return query_matching_resumes(request.query_text, request.n_results)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Resume query error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Resume query error: {e!s}")
 
 @router.post("/query/jds")
 async def api_query_jds(request: QueryRequest):
@@ -125,4 +124,4 @@ async def api_query_jds(request: QueryRequest):
     try:
         return query_matching_jds(request.query_text, request.n_results)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"JD query error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"JD query error: {e!s}")

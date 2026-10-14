@@ -1,5 +1,4 @@
 import threading
-from typing import Dict, List, Optional, Tuple
 
 
 class TelemetryRegistry:
@@ -14,17 +13,17 @@ class TelemetryRegistry:
 
     def __init__(self):
         self._lock = threading.Lock()
-        self._counters: Dict[str, Dict[Tuple[Tuple[str, str], ...], float]] = {}
-        self._gauges: Dict[str, Dict[Tuple[Tuple[str, str], ...], float]] = {}
-        self._summaries: Dict[str, Dict[Tuple[Tuple[str, str], ...], List[float]]] = {}
-        self._descriptions: Dict[str, str] = {}
+        self._counters: dict[str, dict[tuple[tuple[str, str], ...], float]] = {}
+        self._gauges: dict[str, dict[tuple[tuple[str, str], ...], float]] = {}
+        self._summaries: dict[str, dict[tuple[tuple[str, str], ...], list[float]]] = {}
+        self._descriptions: dict[str, str] = {}
 
-    def _normalize_labels(self, labels: Optional[Dict[str, str]]) -> Tuple[Tuple[str, str], ...]:
+    def _normalize_labels(self, labels: dict[str, str] | None) -> tuple[tuple[str, str], ...]:
         if not labels:
             return ()
         return tuple(sorted((str(k), str(v)) for k, v in labels.items()))
 
-    def _format_labels(self, label_tuple: Tuple[Tuple[str, str], ...]) -> str:
+    def _format_labels(self, label_tuple: tuple[tuple[str, str], ...]) -> str:
         if not label_tuple:
             return ""
         items = [f'{k}="{v}"' for k, v in label_tuple]
@@ -34,7 +33,7 @@ class TelemetryRegistry:
         self,
         name: str,
         value: float = 1.0,
-        labels: Optional[Dict[str, str]] = None,
+        labels: dict[str, str] | None = None,
         description: str = "",
     ) -> None:
         norm = self._normalize_labels(labels)
@@ -49,7 +48,7 @@ class TelemetryRegistry:
         self,
         name: str,
         value: float,
-        labels: Optional[Dict[str, str]] = None,
+        labels: dict[str, str] | None = None,
         description: str = "",
     ) -> None:
         norm = self._normalize_labels(labels)
@@ -64,7 +63,7 @@ class TelemetryRegistry:
         self,
         name: str,
         value: float,
-        labels: Optional[Dict[str, str]] = None,
+        labels: dict[str, str] | None = None,
         description: str = "",
     ) -> None:
         norm = self._normalize_labels(labels)
@@ -80,8 +79,8 @@ class TelemetryRegistry:
     def get_summary_quantiles(
         self,
         name: str,
-        labels: Optional[Dict[str, str]] = None,
-    ) -> Dict[str, float]:
+        labels: dict[str, str] | None = None,
+    ) -> dict[str, float]:
         norm = self._normalize_labels(labels)
         with self._lock:
             samples = list(self._summaries.get(name, {}).get(norm, []))
@@ -108,7 +107,7 @@ class TelemetryRegistry:
         }
 
     def generate_prometheus_format(self) -> str:
-        lines: List[str] = []
+        lines: list[str] = []
 
         with self._lock:
             # 1. Counters

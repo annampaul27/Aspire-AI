@@ -40,7 +40,7 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            render_as_batch=True if "sqlite" in str(engine.url) else False,
+            render_as_batch="sqlite" in str(engine.url),
         )
 
         with context.begin_transaction():

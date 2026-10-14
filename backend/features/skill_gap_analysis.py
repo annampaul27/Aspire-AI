@@ -8,7 +8,6 @@ API/LLM integration is intentionally kept separate so that
 the AI provider can be connected later.
 """
 
-from typing import Dict, List, Optional
 
 
 VALID_SKILL_LEVELS = [
@@ -22,8 +21,8 @@ VALID_SKILL_LEVELS = [
 def prepare_skill_gap_analysis(
     candidate_profile: str,
     target_role: str,
-    job_description: Optional[str] = None
-) -> Dict:
+    job_description: str | None = None
+) -> dict:
     """
     Prepare candidate information for skill-gap analysis.
 
@@ -66,8 +65,8 @@ def prepare_skill_gap_analysis(
 
 def build_competency_area(
     area_name: str,
-    skills: List[Dict]
-) -> Dict:
+    skills: list[dict]
+) -> dict:
     """
     Create a structured competency area.
 
@@ -102,7 +101,7 @@ def build_skill_gap(
     skill_name: str,
     current_level: str,
     required_level: str
-) -> Dict:
+) -> dict:
     """
     Create a structured skill-gap entry.
     """
@@ -123,7 +122,7 @@ def build_skill_gap(
     }
 
 
-def get_skill_gap_analysis_requirements() -> Dict:
+def get_skill_gap_analysis_requirements() -> dict:
     """
     Return the required output structure for the AI layer.
     """

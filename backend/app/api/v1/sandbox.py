@@ -1,7 +1,7 @@
 import os
 from fastapi import APIRouter
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional, Any
+from typing import Any
 from dotenv import load_dotenv
 from app.core.config import settings
 
@@ -25,36 +25,36 @@ class BugFixRequest(BaseModel):
 class TestCaseResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    test_name: Optional[str] = Field(default="Test Case", alias="name", description="Name of the test case")
+    test_name: str | None = Field(default="Test Case", alias="name", description="Name of the test case")
     status: str = Field(default="PASS", description="Must be 'PASS' or 'FAIL' or 'pass'")
-    latency_metric: Optional[Any] = Field(default="N/A", description="Performance metric output")
-    details: Optional[str] = Field(default="Passed successfully", description="Explanation of test result")
+    latency_metric: Any | None = Field(default="N/A", description="Performance metric output")
+    details: str | None = Field(default="Passed successfully", description="Explanation of test result")
 
 
 class BugFixResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     is_solved: bool = Field(description="True if all production criteria and tests pass successfully")
-    test_cases: List[TestCaseResult] = Field(description="Detailed test case execution suite")
+    test_cases: list[TestCaseResult] = Field(description="Detailed test case execution suite")
     cryptographic_hash: str = Field(description="SHA-256 proof-of-work security hash token")
 
 
 class RunTestsRequest(BaseModel):
     challenge_id: str = Field(description="Unique challenge key, e.g. db-perf-01")
     code_submission: str = Field(description="Candidate submitted code or DDL")
-    user_id: Optional[str] = Field(default=None, description="Current student user ID")
+    user_id: str | None = Field(default=None, description="Current student user ID")
 
 
 class RunTestsResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     is_solved: bool = Field(description="True if all production test assertions pass")
-    test_cases: List[TestCaseResult] = Field(description="Test case execution details")
+    test_cases: list[TestCaseResult] = Field(description="Test case execution details")
     crypto_hash: str = Field(default="", description="SHA-256 tamper-proof token")
     cryptographic_hash: str = Field(default="", description="SHA-256 tamper-proof token")
     execution_time_ms: float = Field(default=0.0, description="Total execution time in milliseconds")
-    query_plan: Optional[str] = Field(default=None, description="Authentic EXPLAIN QUERY PLAN output")
-    error_message: Optional[str] = Field(default=None, description="Security violation or syntax error details")
+    query_plan: str | None = Field(default=None, description="Authentic EXPLAIN QUERY PLAN output")
+    error_message: str | None = Field(default=None, description="Security violation or syntax error details")
 
 
 class ChallengeRequest(BaseModel):
@@ -65,10 +65,10 @@ class ChallengeRequest(BaseModel):
 class ChallengeResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    challenge_id: Optional[str] = Field(default="db-perf-01", description="Unique identifier")
-    title: Optional[str] = Field(default="Production PostgreSQL Slow Query Fix", description="Catchy title of the challenge")
-    description: Optional[str] = Field(default="Fix the unindexed sequential scan in the given snippet.", description="Detailed scenario description")
-    starter_code: Optional[str] = Field(default="# Broken code\nSELECT * FROM users WHERE email = 'test@example.com';", description="The broken starter code snippet")
+    challenge_id: str | None = Field(default="db-perf-01", description="Unique identifier")
+    title: str | None = Field(default="Production PostgreSQL Slow Query Fix", description="Catchy title of the challenge")
+    description: str | None = Field(default="Fix the unindexed sequential scan in the given snippet.", description="Detailed scenario description")
+    starter_code: str | None = Field(default="# Broken code\nSELECT * FROM users WHERE email = 'test@example.com';", description="The broken starter code snippet")
 
 
 # Deterministic challenge templates for high-speed fallback / NF2 compliance
@@ -163,7 +163,7 @@ async def generate_dynamic_challenge(data: ChallengeRequest):
 async def _execute_sandbox_candidate(
     challenge_id: str,
     candidate_code: str,
-    user_id: Optional[str] = None
+    user_id: str | None = None
 ) -> ExecutionResult:
     """
     Executes candidate submission in authentic isolated execution environment

@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from typing import Optional, List, Dict, Any
+from typing import Any
 from sqlalchemy.orm import Session
 
 from sqlalchemy import func
@@ -12,9 +12,9 @@ from app.models.entities import User
 security_scheme = HTTPBearer(auto_error=False)
 
 async def get_current_user(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_scheme),
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Hardened cryptographic Bearer token authenticator (Audit §4.6 & Milestone 1).
     Validates signature, expiration, and loads active user profile from relational DB.
@@ -65,9 +65,9 @@ async def get_current_user(
     }
 
 async def get_optional_user(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_scheme),
     db: Session = Depends(get_db),
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any] | None:
     """
     Optional authentication dependency for endpoints that provide enriched responses
     to authenticated callers while remaining accessible to public visitors.
@@ -92,12 +92,12 @@ async def get_optional_user(
     except Exception:
         return None
 
-def require_role(allowed_roles: List[str]):
+def require_role(allowed_roles: list[str]):
     """
     FastAPI RBAC role enforcer dependency (Audit §4.6 & Milestone 1).
     Ensures caller holds one of the specified allowed_roles.
     """
-    def role_checker(current_user: Dict[str, Any] = Depends(get_current_user)):
+    def role_checker(current_user: dict[str, Any] = Depends(get_current_user)):
         user_role = current_user.get("role")
         if user_role not in allowed_roles:
             raise HTTPException(
@@ -107,7 +107,7 @@ def require_role(allowed_roles: List[str]):
         return current_user
     return role_checker
 
-def verify_org_isolation(current_user: Dict[str, Any], target_org_id: str):
+def verify_org_isolation(current_user: dict[str, Any], target_org_id: str):
     """Enforces multi-tenant isolation: reject requests where target org_id != user org_id"""
     if current_user.get("role") == "admin":
         return True  # Platform superuser can audit all orgs

@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import Optional, Dict, Any
+from typing import Any
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, status, Query, Request, Depends, Header
 from sqlalchemy.orm import Session
@@ -29,11 +29,11 @@ class VerifyPaymentRequest(BaseModel):
     provider: str = "razorpay"
     order_id: str
     payment_id: str
-    signature: Optional[str] = None
+    signature: str | None = None
     billing_cycle: str = "monthly"
 
 @router.get("/plans")
-async def get_plans_catalog(audience: Optional[str] = Query(None, description="'student' | 'employer' | 'all'")):
+async def get_plans_catalog(audience: str | None = Query(None, description="'student' | 'employer' | 'all'")):
     """
     Returns the comprehensive tiered SaaS plan catalog with features, quotas, and INR/USD pricing.
     """
@@ -42,7 +42,7 @@ async def get_plans_catalog(audience: Optional[str] = Query(None, description="'
 
 @router.get("/subscription")
 async def get_active_subscription(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: dict[str, Any] = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -156,7 +156,7 @@ async def get_active_subscription(
 @router.post("/checkout")
 async def create_checkout_session(
     payload: CheckoutRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: dict[str, Any] = Depends(get_current_user),
 ):
     """
     Creates an authenticated payment order or checkout session for Razorpay or Stripe.
@@ -187,7 +187,7 @@ async def create_checkout_session(
 @router.post("/verify-payment")
 async def verify_payment_and_activate(
     payload: VerifyPaymentRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: dict[str, Any] = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -295,8 +295,8 @@ async def handle_payment_webhook(
     provider: str,
     request: Request,
     db: Session = Depends(get_db),
-    x_razorpay_signature: Optional[str] = Header(None, alias="x-razorpay-signature"),
-    stripe_signature: Optional[str] = Header(None, alias="stripe-signature"),
+    x_razorpay_signature: str | None = Header(None, alias="x-razorpay-signature"),
+    stripe_signature: str | None = Header(None, alias="stripe-signature"),
 ):
     """
     Authentic webhook receiver handling raw event payloads from Razorpay or Stripe.
@@ -432,7 +432,7 @@ async def handle_payment_webhook(
 
 @router.post("/cancel")
 async def cancel_subscription(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: dict[str, Any] = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """

@@ -2,7 +2,7 @@ import hmac
 import hashlib
 import time
 import uuid
-from typing import Dict, Any, Optional
+from typing import Any
 from datetime import datetime, timedelta
 
 from app.core.config import settings
@@ -29,11 +29,11 @@ class PaymentGatewayService:
         plan_id: str,
         currency: str = "INR",
         billing_cycle: str = "monthly",
-        org_id: Optional[str] = None,
-        user_id: Optional[str] = None,
-        user_email: Optional[str] = None,
+        org_id: str | None = None,
+        user_id: str | None = None,
+        user_email: str | None = None,
         provider: str = "razorpay",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Creates an order / checkout session for the selected SaaS plan.
         """
@@ -52,7 +52,7 @@ class PaymentGatewayService:
         else:
             amount_float = plan.price_usd_annual if billing_cycle == "annual" else plan.price_usd_monthly
             amount = int(amount_float)
-            amount_subunits = int(round(amount_float * 100))  # Cents
+            amount_subunits = round(amount_float * 100)  # Cents
 
         if provider == "razorpay":
             order_id = f"order_rzp_{uuid.uuid4().hex[:14]}"
@@ -130,7 +130,7 @@ class PaymentGatewayService:
             if not timestamp or not v1_signature:
                 return False
 
-            signed_payload = f"{timestamp}.".encode("utf-8") + payload_bytes
+            signed_payload = f"{timestamp}.".encode() + payload_bytes
             expected = hmac.new(
                 secret.encode("utf-8"),
                 signed_payload,
@@ -153,7 +153,7 @@ class PaymentGatewayService:
         if provider == "razorpay":
             if not order_id or not payment_id or not signature:
                 return False
-            data_to_sign = f"{order_id}|{payment_id}".encode("utf-8")
+            data_to_sign = f"{order_id}|{payment_id}".encode()
             expected = hmac.new(
                 self.razorpay_key_secret.encode("utf-8"),
                 data_to_sign,
@@ -163,9 +163,7 @@ class PaymentGatewayService:
 
         elif provider == "stripe":
             # In Stripe, client returns session_id and payment_intent_id
-            if payment_id and order_id:
-                return True
-            return False
+            return bool(payment_id and order_id)
 
         return False
 

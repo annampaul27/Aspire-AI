@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 from app.services.sandbox.base import BaseSandboxRunner
 from app.services.sandbox.database_runner import EphemeralDatabaseRunner
@@ -17,7 +16,7 @@ class SandboxRunnerFactory:
     def get_runner(
         cls,
         challenge_id: str,
-        language: Optional[str] = None
+        language: str | None = None
     ) -> BaseSandboxRunner:
         c_id = (challenge_id or "").lower()
         lang = (language or "").lower()

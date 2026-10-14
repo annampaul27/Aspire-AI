@@ -1,6 +1,6 @@
 import uuid
 import datetime
-from typing import Optional, List, Dict, Any
+from typing import Any
 from fastapi import (
     APIRouter,
     WebSocket,
@@ -36,13 +36,13 @@ class MovePipelineStageRequest(BaseModel):
     candidate_id: str
     from_stage: str
     to_stage: str
-    job_id: Optional[str] = None
-    reason: Optional[str] = "Moved in collaborative Kanban"
+    job_id: str | None = None
+    reason: str | None = "Moved in collaborative Kanban"
 
 
 class SubmitScorecardRequest(BaseModel):
     candidate_id: str
-    job_id: Optional[str] = None
+    job_id: str | None = None
     overall_recommendation: str = Field(
         ..., description="'strong_hire', 'hire', 'neutral', 'reject'"
     )
@@ -64,8 +64,8 @@ class CreateRecruiterNoteRequest(BaseModel):
 # -------------------------------------------------------------------------
 
 def _compute_team_scorecard_summary(
-    scorecards: List[CandidateScorecard],
-) -> Dict[str, Any]:
+    scorecards: list[CandidateScorecard],
+) -> dict[str, Any]:
     if not scorecards:
         return {
             "total_reviews": 0,
@@ -125,7 +125,7 @@ def _compute_team_scorecard_summary(
 async def websocket_hiring_endpoint(
     websocket: WebSocket,
     org_id: str,
-    token: Optional[str] = Query(None),
+    token: str | None = Query(None),
 ):
     """
     Tenant-isolated WebSocket room for live recruiter collaboration.
@@ -195,7 +195,7 @@ async def websocket_hiring_endpoint(
 @router.post("/collaboration/pipeline/move")
 async def move_pipeline_stage(
     payload: MovePipelineStageRequest,
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin"])),
     db: Session = Depends(get_db),
 ):
     """
@@ -297,7 +297,7 @@ async def move_pipeline_stage(
 @router.post("/collaboration/scorecards")
 async def submit_candidate_scorecard(
     payload: SubmitScorecardRequest,
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin"])),
     db: Session = Depends(get_db),
 ):
     """
@@ -403,7 +403,7 @@ async def submit_candidate_scorecard(
 @router.get("/collaboration/scorecards/{candidate_id}")
 async def get_candidate_scorecards(
     candidate_id: str,
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin"])),
     db: Session = Depends(get_db),
 ):
     """
@@ -460,7 +460,7 @@ async def get_candidate_scorecards(
 @router.post("/collaboration/notes")
 async def create_recruiter_note(
     payload: CreateRecruiterNoteRequest,
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin"])),
     db: Session = Depends(get_db),
 ):
     """
@@ -503,7 +503,7 @@ async def create_recruiter_note(
 @router.get("/collaboration/notes/{candidate_id}")
 async def get_recruiter_notes(
     candidate_id: str,
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin"])),
     db: Session = Depends(get_db),
 ):
     """
@@ -547,7 +547,7 @@ async def get_recruiter_notes(
 
 @router.get("/collaboration/presence")
 async def get_team_presence(
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin"])),
 ):
     """
     Returns active collaborators and connection count in the recruiter's tenant.
@@ -566,7 +566,7 @@ async def get_team_presence(
 @router.get("/collaboration/pipeline/history/{candidate_id}")
 async def get_pipeline_stage_history(
     candidate_id: str,
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin"])),
     db: Session = Depends(get_db),
 ):
     """

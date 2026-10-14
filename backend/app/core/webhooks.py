@@ -3,7 +3,7 @@ import hmac
 import json
 import time
 import uuid
-from typing import Any, Dict, List
+from typing import Any
 import urllib.request
 import urllib.error
 
@@ -16,7 +16,7 @@ def generate_webhook_signature(secret: str, payload_str: str, timestamp: int) ->
     Computes standard HMAC-SHA256 signature header matching Stripe / GitHub webhook security conventions.
     Format: sha256=<hex_digest> computed over '{timestamp}.{payload_str}'.
     """
-    signature_payload = f"{timestamp}.{payload_str}".encode("utf-8")
+    signature_payload = f"{timestamp}.{payload_str}".encode()
     secret_bytes = secret.encode("utf-8")
     digest = hmac.new(secret_bytes, signature_payload, hashlib.sha256).hexdigest()
     return f"sha256={digest}"
@@ -26,10 +26,10 @@ def deliver_webhook_payload(
     target_url: str,
     secret_key: str,
     event_type: str,
-    payload: Dict[str, Any],
+    payload: dict[str, Any],
     timeout_seconds: float = 3.0,
     dry_run: bool = False,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Delivers a signed webhook event to the recipient endpoint.
     Includes security headers:
@@ -93,9 +93,9 @@ def dispatch_outbound_event(
     db: Session,
     org_id: str,
     event_type: str,
-    payload: Dict[str, Any],
+    payload: dict[str, Any],
     dry_run: bool = False,
-) -> List[AtsWebhookDelivery]:
+) -> list[AtsWebhookDelivery]:
     """
     Queries active webhook subscriptions for the tenant, matches event types,
     signs and delivers payloads, and records immutable delivery audit logs.
@@ -109,7 +109,7 @@ def dispatch_outbound_event(
         .all()
     )
 
-    deliveries: List[AtsWebhookDelivery] = []
+    deliveries: list[AtsWebhookDelivery] = []
 
     for sub in subscriptions:
         try:

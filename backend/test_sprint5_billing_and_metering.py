@@ -194,7 +194,7 @@ def test_checkout_order_creation_razorpay_and_stripe():
 
 def test_payment_verification_and_db_activation():
     """Verify client payment confirmation and database subscription activation."""
-    headers, org_id = create_isolated_employer(prefix="pay-verify")
+    headers, _org_id = create_isolated_employer(prefix="pay-verify")
     order_id = f"order_{uuid.uuid4().hex[:10]}"
     payment_id = f"pay_{uuid.uuid4().hex[:10]}"
 
@@ -202,7 +202,7 @@ def test_payment_verification_and_db_activation():
     key_secret = settings.RAZORPAY_KEY_SECRET or "rzp_secret_dummy"
     signature = hmac.new(
         key_secret.encode("utf-8"),
-        f"{order_id}|{payment_id}".encode("utf-8"),
+        f"{order_id}|{payment_id}".encode(),
         hashlib.sha256
     ).hexdigest()
 
@@ -306,7 +306,7 @@ def test_cryptographic_webhook_verification_stripe():
 
     # 1. Valid Signature with timestamp
     ts = str(int(time.time()))
-    signed_payload = f"{ts}.".encode("utf-8") + body_raw
+    signed_payload = f"{ts}.".encode() + body_raw
     secret = (settings.STRIPE_WEBHOOK_SECRET or "whsec_dev").encode("utf-8")
     v1_sig = hmac.new(secret, signed_payload, hashlib.sha256).hexdigest()
     header_val = f"t={ts},v1={v1_sig}"
@@ -336,7 +336,7 @@ def test_cryptographic_webhook_verification_stripe():
         }
     }
     cancel_body = json.dumps(cancel_payload).encode("utf-8")
-    signed_cancel = f"{ts}.".encode("utf-8") + cancel_body
+    signed_cancel = f"{ts}.".encode() + cancel_body
     cancel_sig = hmac.new(secret, signed_cancel, hashlib.sha256).hexdigest()
 
     res_cancel = client.post(
@@ -471,7 +471,7 @@ def test_quota_enforcement_candidate_evaluations_metering():
 
 def test_subscription_cancellation_endpoint():
     """Verify that POST /billing/cancel marks the active subscription as cancelled on an isolated org."""
-    headers, org_id = create_isolated_employer(prefix="cancel")
+    headers, _org_id = create_isolated_employer(prefix="cancel")
     res = client.post("/api/v1/billing/cancel", headers=headers)
     assert res.status_code == 200
     assert res.json()["status"] == "cancelled"

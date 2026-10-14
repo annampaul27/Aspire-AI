@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
@@ -49,10 +49,8 @@ async def lifespan(app: FastAPI):
     if not scheduler.running:
         scheduler.start()
         
-    try:
+    with suppress(Exception):
         run_deadline_notifications_job()
-    except Exception:
-        pass
         
     yield
     

@@ -10,9 +10,7 @@ def _skills_match(r_skill: str, j_skill: str) -> bool:
         return True
     if "react" in r and "react" in j:
         return True
-    if (r in j and len(r) >= 5) or (j in r and len(j) >= 5):
-        return True
-    return False
+    return bool((r in j and len(r) >= 5) or (j in r and len(j) >= 5))
 
 def compare_resume_to_jd(resume: ResumeSchema, jd: JDSchema) -> ComparisonResultSchema:
     """
@@ -54,17 +52,8 @@ def compare_resume_to_jd(resume: ResumeSchema, jd: JDSchema) -> ComparisonResult
             bonus_skills.append(r_sk)
     
     # Weighted Score calculation (E2: Critical weight=3.0 (80%), Optional weight=1.0 (20%))
-    mandatory_score = 0.0
-    if jd_mandatory:
-        mandatory_score = (len(matched_skills) / len(jd_mandatory)) * 80.0
-    else:
-        mandatory_score = 80.0 # If no mandatory skills specified, award full baseline
-        
-    nice_to_have_score = 0.0
-    if jd_nice:
-        nice_to_have_score = (matched_nice_count / len(jd_nice)) * 20.0
-    else:
-        nice_to_have_score = 20.0 # Full points if no nice to have
+    mandatory_score = (len(matched_skills) / len(jd_mandatory)) * 80.0 if jd_mandatory else 80.0
+    nice_to_have_score = (matched_nice_count / len(jd_nice)) * 20.0 if jd_nice else 20.0
         
     total_score = round(mandatory_score + nice_to_have_score, 2)
     

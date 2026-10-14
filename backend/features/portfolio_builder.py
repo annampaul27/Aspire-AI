@@ -7,7 +7,6 @@ AI-generated personal portfolio websites.
 The actual HTML generation/API integration will be handled later.
 """
 
-from typing import Dict, List
 
 
 VALID_LAYOUTS = [
@@ -23,7 +22,7 @@ VALID_MODES = [
 
 
 def prepare_portfolio(
-    candidate_data: Dict,
+    candidate_data: dict,
     color_theme: str = "blue",
     mode: str = "Light",
     layout_style: str = "Classic",
@@ -31,11 +30,11 @@ def prepare_portfolio(
     corners: str = "rounded",
     animation_level: str = "medium",
     nav_style: str = "standard",
-    section_order: List[str] = None,
+    section_order: list[str] | None = None,
     contact_email: str = "",
     contact_phone: str = "",
-    custom_links: Dict = None
-) -> Dict:
+    custom_links: dict | None = None
+) -> dict:
     """
     Prepare candidate information and preferences for portfolio generation.
     """
@@ -85,7 +84,7 @@ def prepare_portfolio(
     }
 
 
-def get_portfolio_requirements() -> List[str]:
+def get_portfolio_requirements() -> list[str]:
     """
     Return the main requirements for generated portfolios.
     """
