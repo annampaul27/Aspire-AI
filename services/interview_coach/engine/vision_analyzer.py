@@ -1,4 +1,3 @@
-from typing import List, Optional
 from services.interview_coach.core.schemas import VisionTelemetryMetrics
 
 class VisionTelemetryAnalyzer:
@@ -49,8 +48,8 @@ class VisionTelemetryAnalyzer:
 
     def analyze_frames(
         self,
-        gaze_frames: List[bool],
-        stability_samples: Optional[List[float]] = None
+        gaze_frames: list[bool],
+        stability_samples: list[float] | None = None
     ) -> VisionTelemetryMetrics:
         """
         Processes a raw time-series array of frame booleans (True = eye contact on screen).

@@ -8,7 +8,7 @@ import asyncio
 import re
 import base64
 import logging
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 try:
     from app.core.config import settings
@@ -18,7 +18,7 @@ except ImportError:
     except ImportError:
         class DefaultSettings:
             github_username: str = "rdnk2004"
-            github_pat: Optional[str] = None
+            github_pat: str | None = None
         settings = DefaultSettings()
 
 try:
@@ -94,12 +94,12 @@ class GitHubService:
             "User-Agent": "Career-OS-Agent/1.0"
         }
 
-    async def _get(self, client: httpx.AsyncClient, url: str, params: Optional[Dict] = None) -> httpx.Response:
+    async def _get(self, client: httpx.AsyncClient, url: str, params: dict | None = None) -> httpx.Response:
         response = await client.get(url, params=params)
         response.raise_for_status()
         return response
 
-    async def get_all_repos(self, username_override: Optional[str] = None) -> List[Dict[str, Any]]:
+    async def get_all_repos(self, username_override: str | None = None) -> list[dict[str, Any]]:
         """
         Fetch all public repositories for the configured account, including collaborated repos.
         Explicitly excludes any private repositories.
@@ -226,7 +226,7 @@ class GitHubService:
         logger.info(f"Filtered to {len(public_repos)} clean public & collaborated repos for {username}.")
         return public_repos
 
-    async def get_repo_file_tree(self, repo_full_name: str) -> Dict[str, Any]:
+    async def get_repo_file_tree(self, repo_full_name: str) -> dict[str, Any]:
         async with httpx.AsyncClient(base_url=self.base_url, headers=self.headers, timeout=10.0) as client:
             try:
                 response = await self._get(client, f"/repos/{repo_full_name}/git/trees/HEAD", params={"recursive": "1"})
@@ -245,7 +245,7 @@ class GitHubService:
             except Exception:
                 return {"tree": []}
 
-    async def get_file_content(self, repo_full_name: str, path: str) -> Optional[str]:
+    async def get_file_content(self, repo_full_name: str, path: str) -> str | None:
         async with httpx.AsyncClient(base_url=self.base_url, headers=self.headers, timeout=10.0) as client:
             try:
                 response = await self._get(client, f"/repos/{repo_full_name}/contents/{path}")
@@ -267,7 +267,7 @@ class GitHubService:
             except Exception:
                 return None
 
-    async def get_readme(self, repo_full_name: str) -> Dict[str, Any]:
+    async def get_readme(self, repo_full_name: str) -> dict[str, Any]:
         """
         Fetch the README metadata and decoded content from GitHub for a given repository.
         Handles all standard README formats (README.md, README.txt, README.rst, etc.).
@@ -289,7 +289,7 @@ class GitHubService:
                 logger.debug(f"Failed to fetch README for {repo_full_name}: {e}")
                 return {"has_readme": False, "content": None, "name": None, "path": None}
 
-    async def inspect_repo_code(self, repo_full_name: str) -> Dict[str, Any]:
+    async def inspect_repo_code(self, repo_full_name: str) -> dict[str, Any]:
         """
         Deep code inspector: extracts file tree, identifies architecture manifests,
         and samples primary entrypoint source code.
@@ -337,7 +337,7 @@ class GitHubService:
             "total_files": len(file_paths)
         }
 
-    async def push_file(self, repo_full_name: str, path: str, content: str, message: str) -> Dict[str, Any]:
+    async def push_file(self, repo_full_name: str, path: str, content: str, message: str) -> dict[str, Any]:
         pat = getattr(settings, "github_pat", None) or getattr(settings, "GITHUB_PAT", None)
         if not pat or str(pat).startswith("ghp_your"):
             # Simulated safe demo commit
@@ -378,7 +378,7 @@ class GitHubService:
                     }
                 raise
 
-    async def delete_file(self, repo_full_name: str, path: str, message: str) -> Dict[str, Any]:
+    async def delete_file(self, repo_full_name: str, path: str, message: str) -> dict[str, Any]:
         pat = getattr(settings, "github_pat", None) or getattr(settings, "GITHUB_PAT", None)
         if not pat or str(pat).startswith("ghp_your"):
             # Simulated safe demo deletion
@@ -416,7 +416,7 @@ class GitHubService:
                     }
                 raise
 
-    async def remediate_repo(self, repo_full_name: str, action: str) -> Dict[str, Any]:
+    async def remediate_repo(self, repo_full_name: str, action: str) -> dict[str, Any]:
         if action in ("add_gitignore", "fix_all"):
             push_res = await self.push_file(
                 repo_full_name=repo_full_name,
@@ -451,7 +451,7 @@ class GitHubService:
             "message": f"Action '{action}' not recognized."
         }
 
-    async def scan_for_secrets(self, repo_full_name: str) -> Dict[str, Any]:
+    async def scan_for_secrets(self, repo_full_name: str) -> dict[str, Any]:
         tree_data = await self.get_repo_file_tree(repo_full_name)
         tree = tree_data.get("tree", [])
         
@@ -565,9 +565,9 @@ github_service = GitHubService()
 def prepare_github_analysis(
     repository_name: str,
     repository_url: str,
-    files: List[str],
+    files: list[str],
     file_content: str
-) -> Dict:
+) -> dict:
     """
     Prepare a GitHub repository for AI-based analysis.
     """
@@ -592,7 +592,7 @@ def prepare_github_analysis(
     }
 
 
-def get_github_analysis_requirements() -> List[str]:
+def get_github_analysis_requirements() -> list[str]:
     return [
         "Project name",
         "Project type",

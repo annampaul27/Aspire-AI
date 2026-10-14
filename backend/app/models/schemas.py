@@ -1,5 +1,4 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
 from enum import Enum
 
 class RoleEnum(str, Enum):
@@ -27,33 +26,33 @@ class UserResponse(BaseModel):
     email: EmailStr
     full_name: str
     role: RoleEnum
-    avatar_url: Optional[str] = None
-    org_id: Optional[str] = None
-    org_name: Optional[str] = None
-    college: Optional[str] = None
-    readiness_score: Optional[int] = None
-    current_tier: Optional[str] = None
+    avatar_url: str | None = None
+    org_id: str | None = None
+    org_name: str | None = None
+    college: str | None = None
+    readiness_score: int | None = None
+    current_tier: str | None = None
 
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=1)
     role: RoleEnum = RoleEnum.EMPLOYER
-    org_id: Optional[str] = None
+    org_id: str | None = None
 
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     expires_in_minutes: int
     user: UserResponse
-    organization: Optional[OrganizationResponse] = None
+    organization: OrganizationResponse | None = None
 
 class RegisterRequest(BaseModel):
     full_name: str
     email: EmailStr
     password: str = Field(..., min_length=6)
     role: RoleEnum = RoleEnum.STUDENT
-    org_id: Optional[str] = None
-    college: Optional[str] = None
+    org_id: str | None = None
+    college: str | None = None
 
 class PasswordResetRequest(BaseModel):
     email: EmailStr

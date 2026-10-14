@@ -1,7 +1,7 @@
 import io
 import os
 import re
-from typing import Dict, Any
+from typing import Any
 import pdfplumber
 import docx
 from app.models.ats import ResumeSchema, JDSchema, WorkExperience
@@ -290,7 +290,7 @@ def parse_jd(raw_text: str) -> JDSchema:
         print(f"[ParserService] Groq parse_jd exception, falling back: {e}")
         return _fallback_parse_jd(raw_text)
 
-def convert_resume_to_ats_payload(resume: ResumeSchema, raw_text: str = "") -> Dict[str, Any]:
+def convert_resume_to_ats_payload(resume: ResumeSchema, raw_text: str = "") -> dict[str, Any]:
     """
     Transforms a parsed ResumeSchema into the full ATSResumePayload structure required by
     the Resume Studio and student profile drawer (FR-02).

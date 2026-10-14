@@ -1,7 +1,7 @@
 import os
 import time
+from typing import ClassVar
 import httpx
-from typing import Optional
 
 from app.services.sandbox.base import BaseSandboxRunner
 from app.services.sandbox.schemas import (
@@ -21,7 +21,7 @@ class Judge0SandboxRunner(BaseSandboxRunner):
     """
 
     # Judge0 language ID mappings
-    LANGUAGE_IDS = {
+    LANGUAGE_IDS: ClassVar[dict[str, int]] = {
         "python": 71,       # Python 3.8.1 / 3.11
         "python3": 71,
         "javascript": 63,   # Node.js
@@ -30,7 +30,7 @@ class Judge0SandboxRunner(BaseSandboxRunner):
         "cpp": 54,
     }
 
-    def __init__(self, endpoint_url: Optional[str] = None, api_key: Optional[str] = None):
+    def __init__(self, endpoint_url: str | None = None, api_key: str | None = None):
         self.endpoint_url = endpoint_url or os.environ.get("JUDGE0_URL", "https://judge0-ce.p.rapidapi.com")
         self.api_key = api_key or os.environ.get("JUDGE0_API_KEY", "")
 
@@ -62,7 +62,7 @@ class Judge0SandboxRunner(BaseSandboxRunner):
             )
 
         # Step 2: Check if endpoint is configured
-        if not self.endpoint_url or "rapidapi" in self.endpoint_url and not self.api_key:
+        if not self.endpoint_url or ("rapidapi" in self.endpoint_url and not self.api_key):
             # Simulated Judge0 container response when no cloud credentials provided
             execution_time = (time.perf_counter() - t_start) * 1000
             return ExecutionResult(
@@ -149,7 +149,7 @@ class Judge0SandboxRunner(BaseSandboxRunner):
                         name="Judge0 Cloud Container Connection",
                         status="FAIL",
                         latency_metric="N/A",
-                        details=f"Could not reach remote Judge0 container: {str(exc)}"
+                        details=f"Could not reach remote Judge0 container: {exc!s}"
                     )
                 ],
                 execution_time_ms=round(t_elapsed, 2),

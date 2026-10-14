@@ -6,6 +6,12 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
+export const BASE_SERVER_URL =
+  process.env.NEXT_PUBLIC_SERVER_URL ||
+  (process.env.NEXT_PUBLIC_API_URL
+    ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, "")
+    : "http://localhost:8000");
+
 export const TOKEN_STORAGE_KEY = "aspireai_jwt_token";
 
 /**
@@ -14,10 +20,40 @@ export const TOKEN_STORAGE_KEY = "aspireai_jwt_token";
 export function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    return localStorage.getItem(TOKEN_STORAGE_KEY);
+    return (
+      localStorage.getItem(TOKEN_STORAGE_KEY) ||
+      localStorage.getItem("aspire_token")
+    );
   } catch {
     return null;
   }
+}
+
+/**
+ * Generates canonical authentication and JSON headers for API calls
+ */
+export function getAuthHeaders(customHeaders?: HeadersInit): HeadersInit {
+  const token = getAuthToken();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  if (customHeaders) {
+    if (customHeaders instanceof Headers) {
+      customHeaders.forEach((value, key) => {
+        headers[key] = value;
+      });
+    } else if (Array.isArray(customHeaders)) {
+      customHeaders.forEach(([key, value]) => {
+        headers[key] = value;
+      });
+    } else {
+      Object.assign(headers, customHeaders);
+    }
+  }
+  return headers;
 }
 
 /**
@@ -27,6 +63,7 @@ export function setAuthToken(token: string): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    localStorage.setItem("aspire_token", token);
   } catch (err) {
     console.warn("Failed to persist JWT to localStorage:", err);
   }
@@ -39,6 +76,7 @@ export function clearAuthToken(): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem("aspire_token");
   } catch (err) {
     console.warn("Failed to clear JWT from localStorage:", err);
   }

@@ -3,7 +3,7 @@ import os
 import uuid
 import logging
 from datetime import datetime, timedelta, date
-from typing import Optional, Dict, Any
+from typing import Any
 
 # Ensure parent directory is in python path when run as script
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +18,7 @@ from app.models.entities import SavedJob, Job, User, UserNotification  # noqa: E
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("notification_worker")
 
-def run_deadline_notifications_job(reference_date: Optional[date] = None) -> Dict[str, Any]:
+def run_deadline_notifications_job(reference_date: date | None = None) -> dict[str, Any]:
     """
     FR-04 3-Week (21-Day) Deadline & Strategic Application Notification Worker.
     

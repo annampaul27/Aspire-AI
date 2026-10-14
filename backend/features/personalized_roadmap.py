@@ -19,7 +19,7 @@ Flow:
        Personalized Roadmap
 """
 
-from typing import Any, Dict, List
+from typing import Any
 import json
 from pathlib import Path
 
@@ -179,7 +179,7 @@ def normalize_skill(skill: str) -> str:
 # Extract skills from skill-gap analysis
 # -------------------------------------------------------------------
 
-def extract_gap_skills(skill_gaps: List[Any]) -> List[Dict[str, str]]:
+def extract_gap_skills(skill_gaps: list[Any]) -> list[dict[str, str]]:
     """
     Accepts several possible formats from the skill-gap module.
 
@@ -250,8 +250,8 @@ def extract_gap_skills(skill_gaps: List[Any]) -> List[Dict[str, str]]:
 # -------------------------------------------------------------------
 
 def match_skills_to_courses(
-    skill_gaps: List[Dict[str, str]]
-) -> List[Dict[str, Any]]:
+    skill_gaps: list[dict[str, str]]
+) -> list[dict[str, Any]]:
     """
     Match identified skill gaps with available CareerCompass courses.
 
@@ -303,8 +303,8 @@ def match_skills_to_courses(
 # -------------------------------------------------------------------
 
 def order_courses(
-    course_matches: List[Dict[str, Any]]
-) -> List[Dict[str, Any]]:
+    course_matches: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
     """
     Arrange available courses so that prerequisites appear first.
 
@@ -349,8 +349,8 @@ def order_courses(
 # -------------------------------------------------------------------
 
 def build_roadmap_phases(
-    ordered_courses: List[Dict[str, Any]]
-) -> List[Dict[str, Any]]:
+    ordered_courses: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
 
     phases = []
 
@@ -389,7 +389,7 @@ def build_roadmap_phases(
     return phases
 
 
-def load_course_data(skill: str) -> Dict[str, Any]:
+def load_course_data(skill: str) -> dict[str, Any]:
     """
     Load the actual course, lessons, and mock-test JSON files
     for a CareerCompass course.
@@ -408,7 +408,7 @@ def load_course_data(skill: str) -> Dict[str, Any]:
 
     if course_file.exists():
         try:
-            with open(course_file, "r", encoding="utf-8") as f:
+            with open(course_file, encoding="utf-8") as f:
                 result["course"] = json.load(f)
         except (json.JSONDecodeError, OSError):
             result["course"] = None
@@ -418,7 +418,7 @@ def load_course_data(skill: str) -> Dict[str, Any]:
 
     if lessons_file.exists():
         try:
-            with open(lessons_file, "r", encoding="utf-8") as f:
+            with open(lessons_file, encoding="utf-8") as f:
                 result["lessons"] = json.load(f)
         except (json.JSONDecodeError, OSError):
             result["lessons"] = []
@@ -428,7 +428,7 @@ def load_course_data(skill: str) -> Dict[str, Any]:
 
     if mock_test_file.exists():
         try:
-            with open(mock_test_file, "r", encoding="utf-8") as f:
+            with open(mock_test_file, encoding="utf-8") as f:
                 result["mock_test"] = json.load(f)
         except (json.JSONDecodeError, OSError):
             result["mock_test"] = None
@@ -441,10 +441,10 @@ def load_course_data(skill: str) -> Dict[str, Any]:
 # -------------------------------------------------------------------
 
 def generate_personalized_roadmap(
-    skill_gaps: List[Any],
+    skill_gaps: list[Any],
     target_role: str = "Target Role",
     weekly_hours: int = 5
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Main function used by the backend.
 
@@ -537,10 +537,10 @@ def generate_personalized_roadmap(
 # -------------------------------------------------------------------
 
 def create_roadmap_from_skill_gap_result(
-    skill_gap_result: Dict[str, Any],
+    skill_gap_result: dict[str, Any],
     target_role: str = "Target Role",
     weekly_hours: int = 5
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Convenience wrapper for connecting this module to the existing
     skill-gap analysis feature.

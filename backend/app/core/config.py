@@ -1,5 +1,4 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Aspire AI Engine"
@@ -12,7 +11,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     
     # CORS Origins (Allowing Next.js frontend on localhost:3000)
-    BACKEND_CORS_ORIGINS: List[str] = [
+    BACKEND_CORS_ORIGINS: list[str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:3001",

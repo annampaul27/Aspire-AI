@@ -1,5 +1,4 @@
 import datetime
-from typing import List, Dict, Optional
 from pydantic import BaseModel, Field, ConfigDict
 
 class RoleTopicPreset(BaseModel):
@@ -12,7 +11,7 @@ class QuestionGenerationRequest(BaseModel):
     role: str = Field(default="Senior Backend Engineer", description="Target job title")
     topic: str = Field(default="Distributed Systems & Partitioning", description="Technical or behavioral focus")
     difficulty: str = Field(default="senior", description="junior | mid | senior | principal")
-    candidate_name: Optional[str] = "Candidate"
+    candidate_name: str | None = "Candidate"
 
 class InterviewQuestionResponse(BaseModel):
     question_id: str
@@ -20,16 +19,16 @@ class InterviewQuestionResponse(BaseModel):
     topic: str
     difficulty: str
     question_scenario: str
-    hints: List[str] = Field(default_factory=list)
-    expected_keywords: List[str] = Field(default_factory=list)
-    follow_up_traps: List[str] = Field(default_factory=list)
+    hints: list[str] = Field(default_factory=list)
+    expected_keywords: list[str] = Field(default_factory=list)
+    follow_up_traps: list[str] = Field(default_factory=list)
 
 class SpeechAcousticsMetrics(BaseModel):
     word_count: int
     duration_seconds: float
     wpm: float
     cadence_rating: str  # "Too Slow", "Optimal", "Slightly Fast", "Too Fast"
-    filler_words_detected: List[str] = Field(default_factory=list)
+    filler_words_detected: list[str] = Field(default_factory=list)
     filler_word_count: int
     filler_percentage: float
     pause_duration_seconds: float = 0.0
@@ -50,13 +49,13 @@ class AnswerSubmissionRequest(BaseModel):
     eye_contact_ratio: float = 0.80
     head_stability_score: float = 85.0
     is_follow_up: bool = False
-    prior_answer: Optional[str] = None
+    prior_answer: str | None = None
 
 class FollowUpProbeResponse(BaseModel):
     probe_id: str
     probe_question: str
     probe_focus: str
-    hint: Optional[str] = None
+    hint: str | None = None
 
 class HireabilityEvaluationReport(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -71,9 +70,9 @@ class HireabilityEvaluationReport(BaseModel):
     nonverbal_score: float = Field(ge=0.0, le=100.0)
     speech_metrics: SpeechAcousticsMetrics
     vision_metrics: VisionTelemetryMetrics
-    rubric_breakdown: Dict[str, float] = Field(default_factory=dict)
-    what_went_well: List[str] = Field(default_factory=list)
-    what_to_improve: List[str] = Field(default_factory=list)
+    rubric_breakdown: dict[str, float] = Field(default_factory=dict)
+    what_went_well: list[str] = Field(default_factory=list)
+    what_to_improve: list[str] = Field(default_factory=list)
     model_senior_response: str
-    radar_chart_data: Dict[str, float] = Field(default_factory=dict)
+    radar_chart_data: dict[str, float] = Field(default_factory=dict)
     created_at: str = Field(default_factory=lambda: datetime.datetime.utcnow().isoformat())

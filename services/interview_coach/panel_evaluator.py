@@ -1,5 +1,4 @@
 import uuid
-from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -7,7 +6,7 @@ class PanelEvaluationRequest(BaseModel):
     role: str = "Senior Software Architect"
     question_scenario: str = "Design a high-throughput event processing architecture"
     candidate_answer: str = ""
-    candidate_name: Optional[str] = "Candidate"
+    candidate_name: str | None = "Candidate"
 
 
 class PanelAgentScorecard(BaseModel):
@@ -18,8 +17,8 @@ class PanelAgentScorecard(BaseModel):
     initial_score: float
     final_score: float
     recommendation: str  # "Strong Hire", "Hire", "Neutral", "Reject"
-    strengths: List[str] = Field(default_factory=list)
-    concerns: List[str] = Field(default_factory=list)
+    strengths: list[str] = Field(default_factory=list)
+    concerns: list[str] = Field(default_factory=list)
     critique_quote: str
 
 
@@ -37,9 +36,9 @@ class MultiAgentPanelEvaluationResponse(BaseModel):
     role: str
     question_scenario: str
     candidate_answer: str
-    panel_agents: List[PanelAgentScorecard]
+    panel_agents: list[PanelAgentScorecard]
     debate_occurred: bool
-    debate_transcripts: List[DebateExchange]
+    debate_transcripts: list[DebateExchange]
     composite_score: float
     committee_recommendation: str  # "Strong Hire", "Hire", "Leaning Hire", "Needs Improvement", "Do Not Hire"
     consensus_status: str  # "Unanimous Consensus", "High Consensus", "Debated Consensus", "Split Decision"
@@ -58,7 +57,7 @@ class MultiAgentPanelOrchestrator:
     coordinates dynamic multi-agent debate rounds to resolve split decisions.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key
 
     def evaluate(self, request: PanelEvaluationRequest) -> MultiAgentPanelEvaluationResponse:
@@ -86,7 +85,7 @@ class MultiAgentPanelOrchestrator:
         has_tier_conflict = any(r in ("Reject", "Neutral") for r in recs) and any(r in ("Strong Hire", "Hire") for r in recs)
 
         debate_occurred = False
-        debate_transcripts: List[DebateExchange] = []
+        debate_transcripts: list[DebateExchange] = []
 
         final_tech_score = tech_score
         final_sys_score = sys_score

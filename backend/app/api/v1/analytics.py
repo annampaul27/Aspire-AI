@@ -1,5 +1,5 @@
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -22,9 +22,9 @@ _STARTUP_TIMESTAMP = time.time()
 
 @router.get("/hiring-funnel", summary="Recruitment funnel conversion velocity and dwell times")
 def get_hiring_funnel(
-    org_id: Optional[str] = Query(None, description="Organization ID filter"),
+    org_id: str | None = Query(None, description="Organization ID filter"),
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     target_org = org_id or "org-acme"
 
     # Query existing scorecards for team consensus telemetry
@@ -128,7 +128,7 @@ def get_hiring_funnel(
 
 
 @router.get("/system-telemetry", summary="Real-time APM telemetry snapshot for frontend HUD")
-def get_system_telemetry() -> Dict[str, Any]:
+def get_system_telemetry() -> dict[str, Any]:
     uptime = round(time.time() - _STARTUP_TIMESTAMP, 1)
 
     # Extract latency summaries from telemetry registry
@@ -153,9 +153,9 @@ def get_system_telemetry() -> Dict[str, Any]:
 
 @router.get("/quota-burn-rate", summary="Subscription quota consumption and runway velocity")
 def get_quota_burn_rate(
-    org_id: Optional[str] = Query(None, description="Organization ID"),
+    org_id: str | None = Query(None, description="Organization ID"),
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     target_org = org_id or "org-acme"
 
     org = db.query(Organization).filter(Organization.id == target_org).first()

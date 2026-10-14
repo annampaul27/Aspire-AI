@@ -6,13 +6,12 @@ API/LLM integration is intentionally kept separate so that
 the backend team can connect the required AI provider later.
 """
 
-from typing import Dict, List, Optional
 
 
 def prepare_resume_analysis(
     resume_text: str,
-    job_description: Optional[str] = None
-) -> Dict:
+    job_description: str | None = None
+) -> dict:
     """
     Prepare the information required for AI-based resume analysis.
 
@@ -46,7 +45,7 @@ def prepare_resume_analysis(
     }
 
 
-def get_resume_analysis_requirements() -> List[str]:
+def get_resume_analysis_requirements() -> list[str]:
     """
     Return the analysis areas expected from the AI service.
     """

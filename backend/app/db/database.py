@@ -1,7 +1,7 @@
 import sqlite3
 import os
 import json
-from typing import Dict, Any, List
+from typing import Any
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "aspire.db")
 
@@ -272,7 +272,7 @@ def init_db():
     except Exception as e:
         print(f"[init_db] Warning creating SQLAlchemy tables: {e}")
 
-def get_user_verified_skills(user_id: str) -> List[str]:
+def get_user_verified_skills(user_id: str) -> list[str]:
     """
     Returns array of verified skills for a user from their profile and passed assessments.
     """
@@ -304,7 +304,7 @@ def get_user_verified_skills(user_id: str) -> List[str]:
     conn.close()
     return list(skills_set)
 
-def get_all_candidate_profiles() -> List[Dict[str, Any]]:
+def get_all_candidate_profiles() -> list[dict[str, Any]]:
     """
     Returns all student candidate profiles along with their verified skills array.
     """

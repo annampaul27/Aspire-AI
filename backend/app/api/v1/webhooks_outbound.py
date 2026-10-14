@@ -1,7 +1,7 @@
 import json
 import secrets
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -14,9 +14,9 @@ router = APIRouter()
 
 
 class WebhookCreateRequest(BaseModel):
-    org_id: Optional[str] = Field(default="org-acme", description="Organization ID")
+    org_id: str | None = Field(default="org-acme", description="Organization ID")
     target_url: str = Field(..., description="Target HTTPS webhook listener endpoint (e.g. Greenhouse/Lever/Workday)")
-    event_types: Optional[List[str]] = Field(
+    event_types: list[str] | None = Field(
         default_factory=lambda: [
             "candidate.shortlisted",
             "scorecard.submitted",
@@ -25,7 +25,7 @@ class WebhookCreateRequest(BaseModel):
         ],
         description="Array of subscribed event types"
     )
-    secret_key: Optional[str] = Field(default=None, description="HMAC shared secret. Auto-generated if not provided.")
+    secret_key: str | None = Field(default=None, description="HMAC shared secret. Auto-generated if not provided.")
 
 
 class WebhookResponse(BaseModel):
@@ -33,7 +33,7 @@ class WebhookResponse(BaseModel):
     org_id: str
     target_url: str
     secret_key: str
-    event_types: List[str]
+    event_types: list[str]
     is_active: bool
     created_at: str
 
@@ -42,7 +42,7 @@ class WebhookResponse(BaseModel):
 def create_webhook_subscription(
     req: WebhookCreateRequest,
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     target_org = req.org_id or "org-acme"
     org = db.query(Organization).filter(Organization.id == target_org).first()
     if not org:
@@ -90,9 +90,9 @@ def create_webhook_subscription(
 
 @router.get("", summary="List Registered Outbound Webhooks for Tenant")
 def list_webhook_subscriptions(
-    org_id: Optional[str] = Query("org-acme"),
+    org_id: str | None = Query("org-acme"),
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     target_org = org_id or "org-acme"
     subscriptions = (
         db.query(AtsWebhookSubscription)
@@ -129,7 +129,7 @@ def list_webhook_subscriptions(
 def delete_webhook_subscription(
     subscription_id: str,
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     sub = db.query(AtsWebhookSubscription).filter(AtsWebhookSubscription.id == subscription_id).first()
     if not sub:
         raise HTTPException(
@@ -150,7 +150,7 @@ def delete_webhook_subscription(
 def test_webhook_delivery(
     subscription_id: str,
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     sub = db.query(AtsWebhookSubscription).filter(AtsWebhookSubscription.id == subscription_id).first()
     if not sub:
         raise HTTPException(
@@ -211,7 +211,7 @@ def test_webhook_delivery(
 def get_webhook_deliveries(
     subscription_id: str,
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     deliveries = (
         db.query(AtsWebhookDelivery)
         .filter(AtsWebhookDelivery.subscription_id == subscription_id)

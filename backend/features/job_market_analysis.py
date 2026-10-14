@@ -5,13 +5,12 @@ Prepares target-role information for job-market and demand analysis.
 The actual external API/data-source integration can be added later.
 """
 
-from typing import Dict, Optional
 
 
 def prepare_job_market_analysis(
     role_title: str,
-    location: Optional[str] = None
-) -> Dict:
+    location: str | None = None
+) -> dict:
     """
     Prepare a target role for job-market analysis.
     """
@@ -49,9 +48,9 @@ def classify_demand(job_count: int) -> str:
 
 
 def build_market_result(
-    job_count: Optional[int],
+    job_count: int | None,
     source: str
-) -> Dict:
+) -> dict:
     """
     Create a structured job-market result.
     """

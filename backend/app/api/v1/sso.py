@@ -1,6 +1,6 @@
 import secrets
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -13,17 +13,17 @@ router = APIRouter()
 
 
 class SSODiscoverRequest(BaseModel):
-    email: Optional[str] = Field(default=None, description="Corporate user email to resolve domain")
-    domain: Optional[str] = Field(default=None, description="Company email domain (e.g. acme.com)")
+    email: str | None = Field(default=None, description="Corporate user email to resolve domain")
+    domain: str | None = Field(default=None, description="Company email domain (e.g. acme.com)")
 
 
 class SSOCallbackRequest(BaseModel):
     org_id: str = Field(..., description="Organization ID for SSO session")
     email: str = Field(..., description="Authenticated user email asserted by IdP")
     full_name: str = Field(default="Enterprise User", description="User full name asserted by IdP")
-    saml_response: Optional[str] = Field(default=None, description="Base64 encoded SAML 2.0 Response")
-    id_token: Optional[str] = Field(default=None, description="OIDC JWT ID Token")
-    relay_state: Optional[str] = Field(default=None, description="State token passed in initial request")
+    saml_response: str | None = Field(default=None, description="Base64 encoded SAML 2.0 Response")
+    id_token: str | None = Field(default=None, description="OIDC JWT ID Token")
+    relay_state: str | None = Field(default=None, description="State token passed in initial request")
 
 
 class SSOConfigRequest(BaseModel):
@@ -31,14 +31,14 @@ class SSOConfigRequest(BaseModel):
     sso_enabled: bool = True
     sso_provider: str = Field(default="okta", description="okta | azure_ad | google")
     sso_domain: str = Field(..., description="Corporate email domain (e.g. acme.com)")
-    idp_entity_id: Optional[str] = None
-    idp_sso_url: Optional[str] = None
-    idp_metadata_url: Optional[str] = None
-    idp_certificate: Optional[str] = None
+    idp_entity_id: str | None = None
+    idp_sso_url: str | None = None
+    idp_metadata_url: str | None = None
+    idp_certificate: str | None = None
 
 
 @router.post("/discover", summary="Discover Enterprise SSO Identity Provider from Email Domain")
-def discover_sso(req: SSODiscoverRequest, db: Session = Depends(get_db)) -> Dict[str, Any]:
+def discover_sso(req: SSODiscoverRequest, db: Session = Depends(get_db)) -> dict[str, Any]:
     """
     Resolves a user's corporate domain (from email or direct domain input)
     against configured enterprise tenants in the database.
@@ -83,10 +83,10 @@ def discover_sso(req: SSODiscoverRequest, db: Session = Depends(get_db)) -> Dict
 @router.get("/authorize", summary="Initiate SAML 2.0 / OIDC Authentication Session")
 def authorize_sso(
     org_id: str = Query(..., description="Organization ID"),
-    redirect_uri: Optional[str] = Query(None),
-    relay_state: Optional[str] = Query(None),
+    redirect_uri: str | None = Query(None),
+    relay_state: str | None = Query(None),
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepares a cryptographically signed SSO login request state.
     """
@@ -112,7 +112,7 @@ def authorize_sso(
 
 
 @router.post("/callback", summary="Consume SAML/OIDC Assertion and JIT Provision User")
-def sso_callback(req: SSOCallbackRequest, db: Session = Depends(get_db)) -> Dict[str, Any]:
+def sso_callback(req: SSOCallbackRequest, db: Session = Depends(get_db)) -> dict[str, Any]:
     """
     Validates assertion from the corporate Identity Provider and provisions
     the user Just-In-Time (JIT) into the organization if they do not exist.
@@ -190,7 +190,7 @@ def sso_callback(req: SSOCallbackRequest, db: Session = Depends(get_db)) -> Dict
 def get_sso_config(
     org_id: str = Query(..., description="Organization ID"),
     db: Session = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found.")
@@ -208,7 +208,7 @@ def get_sso_config(
 
 
 @router.post("/config", summary="Update Tenant Enterprise SSO Configuration")
-def update_sso_config(req: SSOConfigRequest, db: Session = Depends(get_db)) -> Dict[str, Any]:
+def update_sso_config(req: SSOConfigRequest, db: Session = Depends(get_db)) -> dict[str, Any]:
     org = db.query(Organization).filter(Organization.id == req.org_id).first()
     if not org:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found.")

@@ -7,7 +7,7 @@ from app.models.entities import DispatchedSprint, VerifiedCredential, User, Orga
 
 client = TestClient(app)
 
-def get_token_for(email: str, role: str, org_id: str = None) -> str:
+def get_token_for(email: str, role: str, org_id: str | None = None) -> str:
     payload = {
         "email": email,
         "password": "AspireAI@2026",

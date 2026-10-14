@@ -6,7 +6,7 @@ import tempfile
 import asyncio
 import subprocess
 import textwrap
-from typing import Dict, Any
+from typing import Any
 
 from app.services.sandbox.base import BaseSandboxRunner
 from app.services.sandbox.schemas import (
@@ -363,7 +363,7 @@ class IsolatedPythonRunner(BaseSandboxRunner):
             except Exception:
                 pass
 
-    def _run_subprocess(self, script_path: str, timeout: float) -> Dict[str, Any]:
+    def _run_subprocess(self, script_path: str, timeout: float) -> dict[str, Any]:
         try:
             completed = subprocess.run(
                 [sys.executable, script_path],
@@ -392,7 +392,7 @@ class IsolatedPythonRunner(BaseSandboxRunner):
                 "returncode": -1,
             }
 
-    def _parse_runner_output(self, stdout: str) -> Dict[str, Any]:
+    def _parse_runner_output(self, stdout: str) -> dict[str, Any]:
         if "---TEST_RESULTS_JSON_START---" in stdout and "---TEST_RESULTS_JSON_END---" in stdout:
             try:
                 part = stdout.split("---TEST_RESULTS_JSON_START---")[1]

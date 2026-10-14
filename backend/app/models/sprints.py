@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-from typing import Optional
 
 class SprintDispatchRequest(BaseModel):
     candidate_id: str
@@ -21,7 +20,7 @@ class SprintDispatchResponse(BaseModel):
     message: str
 
 class SprintCompleteRequest(BaseModel):
-    dispatch_id: Optional[str] = None
+    dispatch_id: str | None = None
     candidate_id: str
     candidate_name: str
     candidate_email: str
@@ -38,11 +37,11 @@ class SprintCompleteResponse(BaseModel):
     skill_name: str
     score: int
     is_verified: bool
-    credential_hash: Optional[str] = None
+    credential_hash: str | None = None
     previous_score: int
     boosted_score: int
     previous_tier: str
     new_tier: str
     elevated_on_radar: bool
-    verification_url: Optional[str] = None
+    verification_url: str | None = None
     liquidity_message: str

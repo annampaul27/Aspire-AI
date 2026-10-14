@@ -1,5 +1,4 @@
 import re
-from typing import List
 from services.interview_coach.core.config import settings
 from services.interview_coach.core.schemas import SpeechAcousticsMetrics
 
@@ -9,7 +8,7 @@ class AudioAcousticsAnalyzer:
     verbal filler tics, and estimated pause duration.
     """
 
-    def __init__(self, filler_words: List[str] = None):
+    def __init__(self, filler_words: list[str] | None = None):
         self.filler_words = [f.lower() for f in (filler_words or settings.FILLER_WORDS)]
         # Compile regex pattern matching whole words or multi-word phrases
         escaped_phrases = [re.escape(w) for w in self.filler_words]
@@ -43,13 +42,13 @@ class AudioAcousticsAnalyzer:
             cadence_rating = "Too Fast"
 
         # Detect fillers
-        detected_fillers: List[str] = []
+        detected_fillers: list[str] = []
         filler_matches = self._filler_regex.findall(clean_text)
         for match in filler_matches:
             detected_fillers.append(match.lower())
 
         filler_count = len(detected_fillers)
-        unique_detected = sorted(list(set(detected_fillers)))
+        unique_detected = sorted(set(detected_fillers))
         filler_pct = (filler_count / max(1, word_count)) * 100.0
 
         # Estimate pause duration based on punctuation breaks (ellipses, em-dashes, commas)

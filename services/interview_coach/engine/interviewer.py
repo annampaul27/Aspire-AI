@@ -1,6 +1,6 @@
 import uuid
 import re
-from typing import Optional, Dict, Any
+from typing import Any
 from services.interview_coach.core.config import settings
 from services.interview_coach.core.schemas import (
     InterviewQuestionResponse,
@@ -26,7 +26,7 @@ class AdaptiveInterviewerEngine:
     - Synthesizes technical, vocal acoustics, and non-verbal telemetry into a composite hireability report.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key if api_key is not None else settings.GROQ_API_KEY
         self.model = settings.GROQ_MODEL
         self.audio_analyzer = AudioAcousticsAnalyzer()
@@ -296,7 +296,7 @@ class AdaptiveInterviewerEngine:
         question: str,
         answer: str,
         role: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Evaluates semantic depth, accuracy, and clarity deterministically."""
         words = re.findall(r'\b\w+\b', answer)
         word_count = len(words)

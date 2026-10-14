@@ -1,4 +1,3 @@
-from typing import Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, func
@@ -13,7 +12,7 @@ class QuotaEnforcementService:
     """
 
     @staticmethod
-    def check_job_creation_quota(db: Session, org_id: Optional[str]):
+    def check_job_creation_quota(db: Session, org_id: str | None):
         """
         Verifies that an organization has not reached its concurrent active job requisition limit.
         """
@@ -52,7 +51,7 @@ class QuotaEnforcementService:
             )
 
     @staticmethod
-    def check_and_record_candidate_evaluation(db: Session, org_id: Optional[str], count: int = 1):
+    def check_and_record_candidate_evaluation(db: Session, org_id: str | None, count: int = 1):
         """
         Checks monthly candidate evaluation quota and increments meter counter.
         """

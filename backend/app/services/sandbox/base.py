@@ -1,6 +1,5 @@
 import abc
 import hashlib
-from typing import List, Optional
 from app.services.sandbox.schemas import (
     ExecutionRequest,
     ExecutionResult,
@@ -25,7 +24,7 @@ class BaseSandboxRunner(abc.ABC):
         challenge_id: str,
         candidate_code: str,
         is_solved: bool,
-        test_cases: Optional[List[ExecutionTestCase]] = None,
+        test_cases: list[ExecutionTestCase] | None = None,
     ) -> str:
         """
         Generates a tamper-proof SHA-256 cryptographic verification token upon true solved status.

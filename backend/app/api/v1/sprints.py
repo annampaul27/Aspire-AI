@@ -3,7 +3,7 @@ import json
 import hashlib
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
-from typing import Dict, Any, List
+from typing import Any
 from sqlalchemy.orm import Session
 
 from app.models.sprints import (
@@ -26,10 +26,10 @@ def compute_sha256(canonical_payload: str) -> str:
     """Deterministic cryptographic SHA-256 hash generator."""
     return hashlib.sha256(canonical_payload.encode("utf-8")).hexdigest()
 
-@router.get("/active", response_model=List[Dict[str, Any]])
+@router.get("/active", response_model=list[dict[str, Any]])
 async def get_active_sprints(
     db: Session = Depends(get_db),
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin", "student"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin", "student"])),
 ):
     """Retrieve all dispatched gap-sprints awaiting candidate completion from relational DB (Audit §4.5 & §4.6)."""
     sprints = (
@@ -60,7 +60,7 @@ async def get_active_sprints(
 async def dispatch_gap_sprint(
     req: SprintDispatchRequest,
     db: Session = Depends(get_db),
-    current_user: Dict[str, Any] = Depends(require_role(["employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["employer", "admin"])),
 ):
     """
     1-Click Gap Sprint Dispatch (E6):
@@ -104,7 +104,7 @@ async def dispatch_gap_sprint(
 async def complete_gap_sprint(
     req: SprintCompleteRequest,
     db: Session = Depends(get_db),
-    current_user: Dict[str, Any] = Depends(require_role(["student", "employer", "admin"])),
+    current_user: dict[str, Any] = Depends(require_role(["student", "employer", "admin"])),
 ):
     """
     Real-Time Talent Liquidity & Rank Elevation (E9, S10, S12):

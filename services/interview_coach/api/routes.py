@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Any
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 
@@ -22,7 +22,7 @@ router = APIRouter()
 _engine = AdaptiveInterviewerEngine()
 _panel_orchestrator = MultiAgentPanelOrchestrator()
 
-PRESET_ROLES: List[RoleTopicPreset] = [
+PRESET_ROLES: list[RoleTopicPreset] = [
     RoleTopicPreset(
         role="Senior Backend Engineer",
         topic="Distributed Systems & Partitioning",
@@ -61,7 +61,7 @@ class FollowUpRequest(BaseModel):
     role: str = "Senior Software Engineer"
 
 @router.get("/health", summary="Service Health Check")
-def get_health() -> Dict[str, Any]:
+def get_health() -> dict[str, Any]:
     return {
         "status": "healthy",
         "service": "interview_coach",
@@ -70,7 +70,7 @@ def get_health() -> Dict[str, Any]:
     }
 
 @router.get("/presets", summary="Retrieve Curated Role & Topic Presets")
-def get_presets() -> Dict[str, List[RoleTopicPreset]]:
+def get_presets() -> dict[str, list[RoleTopicPreset]]:
     return {"presets": PRESET_ROLES}
 
 @router.post("/question", response_model=InterviewQuestionResponse, summary="Generate Adaptive Technical Scenario")
@@ -82,7 +82,7 @@ def generate_interview_question(req: QuestionGenerationRequest) -> InterviewQues
             difficulty=req.difficulty
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate question: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate question: {e!s}")
 
 @router.post("/follow-up", response_model=FollowUpProbeResponse, summary="Generate Adaptive Counter-Grill Probe")
 def generate_follow_up(req: FollowUpRequest) -> FollowUpProbeResponse:
@@ -93,14 +93,14 @@ def generate_follow_up(req: FollowUpRequest) -> FollowUpProbeResponse:
             role=req.role
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate follow-up: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate follow-up: {e!s}")
 
 @router.post("/evaluate", response_model=HireabilityEvaluationReport, summary="Synthesize Multimodal Evaluation Report")
 def evaluate_session(req: AnswerSubmissionRequest) -> HireabilityEvaluationReport:
     try:
         return _engine.evaluate_session(req)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to evaluate session: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to evaluate session: {e!s}")
 
 
 @router.post("/panel/evaluate", response_model=MultiAgentPanelEvaluationResponse, summary="Synthesize Multi-Agent Committee Evaluation")
@@ -108,4 +108,4 @@ def evaluate_panel_session(req: PanelEvaluationRequest) -> MultiAgentPanelEvalua
     try:
         return _panel_orchestrator.evaluate(req)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to evaluate panel session: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to evaluate panel session: {e!s}")

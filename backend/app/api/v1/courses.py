@@ -6,11 +6,12 @@ Authored by Jayasree A B (branch: courses)
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from app.db.database import get_db_connection
+import contextlib
 
 logger = logging.getLogger("careercompass_courses")
 logger.setLevel(logging.INFO)
@@ -57,7 +58,7 @@ def find_course_dir(identifier: str) -> Path:
             course_file = sub / "course.json"
             if course_file.exists():
                 try:
-                    with open(course_file, "r", encoding="utf-8") as f:
+                    with open(course_file, encoding="utf-8") as f:
                         data = json.load(f)
                         if data.get("course_id", "").lower() == identifier_clean:
                             return sub
@@ -71,8 +72,8 @@ def find_course_dir(identifier: str) -> Path:
 
 
 class MockTestSubmission(BaseModel):
-    user_id: Optional[str] = Field("cand-1", description="ID of student submitting the mock test")
-    answers: Dict[str, Any] = Field(
+    user_id: str | None = Field("cand-1", description="ID of student submitting the mock test")
+    answers: dict[str, Any] = Field(
         ...,
         description="Mapping of question_id (as string) to selected option index or string answer",
         examples=[{"1": 1, "2": 0, "3": 2}]
@@ -92,7 +93,7 @@ async def list_all_courses():
             course_file = sub / "course.json"
             if course_file.exists():
                 try:
-                    with open(course_file, "r", encoding="utf-8") as f:
+                    with open(course_file, encoding="utf-8") as f:
                         data = json.load(f)
                         data["slug"] = sub.name
                         catalog.append(data)
@@ -115,7 +116,7 @@ async def get_course_overview(identifier: str):
     course_dir = find_course_dir(identifier)
     course_file = course_dir / "course.json"
     
-    with open(course_file, "r", encoding="utf-8") as f:
+    with open(course_file, encoding="utf-8") as f:
         data = json.load(f)
     data["slug"] = course_dir.name
     return data
@@ -135,7 +136,7 @@ async def get_course_lessons(identifier: str):
             detail=f"Lessons not found for course '{identifier}'"
         )
 
-    with open(lessons_file, "r", encoding="utf-8") as f:
+    with open(lessons_file, encoding="utf-8") as f:
         data = json.load(f)
     data["slug"] = course_dir.name
     return data
@@ -159,7 +160,7 @@ async def get_course_mock_test(
             detail=f"Mock test not found for course '{identifier}'"
         )
 
-    with open(test_file, "r", encoding="utf-8") as f:
+    with open(test_file, encoding="utf-8") as f:
         data = json.load(f)
 
     sanitized_questions = []
@@ -192,12 +193,12 @@ async def submit_course_mock_test(identifier: str, submission: MockTestSubmissio
     test_file = course_dir / "mock_test.json"
     course_file = course_dir / "course.json"
 
-    with open(test_file, "r", encoding="utf-8") as f:
+    with open(test_file, encoding="utf-8") as f:
         test_data = json.load(f)
 
     course_subject = course_dir.name.capitalize()
     if course_file.exists():
-        with open(course_file, "r", encoding="utf-8") as f:
+        with open(course_file, encoding="utf-8") as f:
             c_meta = json.load(f)
             course_subject = c_meta.get("subject", course_subject)
 
@@ -216,15 +217,15 @@ async def submit_course_mock_test(identifier: str, submission: MockTestSubmissio
         # Match either exact option index, or option text
         is_correct = False
         if user_ans is not None:
-            if user_ans == correct_ans:
-                is_correct = True
-            elif isinstance(user_ans, int) and isinstance(correct_ans, int) and user_ans == correct_ans:
-                is_correct = True
-            elif str(user_ans).strip().lower() == str(correct_ans).strip().lower():
-                is_correct = True
-            elif isinstance(correct_ans, int) and 0 <= correct_ans < len(q.get("options", [])):
-                if str(user_ans).strip().lower() == str(q["options"][correct_ans]).strip().lower():
-                    is_correct = True
+            is_correct = (
+                user_ans == correct_ans
+                or str(user_ans).strip().lower() == str(correct_ans).strip().lower()
+                or (
+                    isinstance(correct_ans, int)
+                    and 0 <= correct_ans < len(q.get("options", []))
+                    and str(user_ans).strip().lower() == str(q["options"][correct_ans]).strip().lower()
+                )
+            )
 
         if is_correct:
             score += 1
@@ -251,10 +252,8 @@ async def submit_course_mock_test(identifier: str, submission: MockTestSubmissio
             if row:
                 skills_list = []
                 if row["verified_skills_json"]:
-                    try:
+                    with contextlib.suppress(Exception):
                         skills_list = json.loads(row["verified_skills_json"])
-                    except Exception:
-                        pass
                 if course_subject not in skills_list:
                     skills_list.append(course_subject)
                     cursor.execute(

@@ -1,8 +1,8 @@
-from typing import List, Dict, Any, Set
+from typing import Any
 import re
 
 # Comprehensive canonical taxonomy mapping
-CANONICAL_SYNONYMS: Dict[str, str] = {
+CANONICAL_SYNONYMS: dict[str, str] = {
     "python": "python",
     "python3": "python",
     "python 3": "python",
@@ -50,10 +50,10 @@ def normalize_skill(skill: str) -> str:
     return CANONICAL_SYNONYMS.get(cleaned, cleaned)
 
 def calculate_match_percentage(
-    user_skills: List[str],
-    required_skills: List[str],
+    user_skills: list[str],
+    required_skills: list[str],
     threshold: float = 80.0
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     FR-05 Matching Engine:
     Compares a candidate's verified skills against an incoming job's required skills.
@@ -74,11 +74,11 @@ def calculate_match_percentage(
         }
 
     # Normalize skill sets
-    norm_user_map: Dict[str, str] = {normalize_skill(s): s for s in user_skills if s and s.strip()}
-    norm_req_map: Dict[str, str] = {normalize_skill(s): s for s in required_skills if s and s.strip()}
+    norm_user_map: dict[str, str] = {normalize_skill(s): s for s in user_skills if s and s.strip()}
+    norm_req_map: dict[str, str] = {normalize_skill(s): s for s in required_skills if s and s.strip()}
 
-    user_norm_set: Set[str] = set(norm_user_map.keys())
-    req_norm_set: Set[str] = set(norm_req_map.keys())
+    user_norm_set: set[str] = set(norm_user_map.keys())
+    req_norm_set: set[str] = set(norm_req_map.keys())
 
     matched_norm = user_norm_set.intersection(req_norm_set)
     missing_norm = req_norm_set - user_norm_set

@@ -8,15 +8,14 @@ skill gaps, and target role.
 API/LLM integration is intentionally kept separate.
 """
 
-from typing import Dict, List, Optional
 
 
 def prepare_career_roadmap(
     target_role: str,
-    current_skills: List[str],
-    skill_gaps: List[Dict],
-    candidate_profile: Optional[str] = None
-) -> Dict:
+    current_skills: list[str],
+    skill_gaps: list[dict],
+    candidate_profile: str | None = None
+) -> dict:
     """
     Prepare information for generating a personalized career roadmap.
 
@@ -64,10 +63,10 @@ def prepare_career_roadmap(
 def create_roadmap_phase(
     phase_name: str,
     duration: str,
-    goals: List[str],
-    skills: List[str],
-    activities: List[str]
-) -> Dict:
+    goals: list[str],
+    skills: list[str],
+    activities: list[str]
+) -> dict:
     """
     Create a structured phase of the career roadmap.
     """
@@ -87,7 +86,7 @@ def create_roadmap_phase(
     }
 
 
-def get_career_roadmap_requirements() -> Dict:
+def get_career_roadmap_requirements() -> dict:
     """
     Return the required structure for the generated roadmap.
     """

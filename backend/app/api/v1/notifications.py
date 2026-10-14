@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Query, Body, Depends
-from typing import Optional, Dict, Any
+from typing import Any
 from datetime import datetime, timedelta
 import uuid
 import json
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/notifications", tags=["FR-04 Deadlines & Notificatio
 
 @router.get("")
 async def get_user_notifications(
-    user_id: Optional[str] = Query("cand-1", description="User ID to fetch notifications for"),
+    user_id: str | None = Query("cand-1", description="User ID to fetch notifications for"),
     db: Session = Depends(get_db)
 ):
     """
@@ -85,7 +85,7 @@ async def mark_notification_as_read(
 
 @router.post("/mark-all-read")
 async def mark_all_notifications_as_read(
-    payload: Dict[str, Any] = Body(default={"user_id": "cand-1"}),
+    payload: dict[str, Any] = Body(default={"user_id": "cand-1"}),
     db: Session = Depends(get_db)
 ):
     """

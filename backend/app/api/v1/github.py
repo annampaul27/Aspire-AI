@@ -4,7 +4,6 @@ Author: Career-OS Security & GitHub Engineering
 """
 
 from fastapi import APIRouter, HTTPException, Query
-from typing import Optional
 from features.github_analysis import github_service
 from app.models.github import RemediationRequest, ScanRequest
 
@@ -12,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/repos", summary="Fetch student public GitHub repositories")
-async def get_repos(username: Optional[str] = Query(None, description="GitHub username or handle")):
+async def get_repos(username: str | None = Query(None, description="GitHub username or handle")):
     try:
         repos = await github_service.get_all_repos(username_override=username)
         return repos

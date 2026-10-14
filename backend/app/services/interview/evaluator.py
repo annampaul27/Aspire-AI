@@ -1,7 +1,6 @@
 import os
 import re
 import uuid
-from typing import Optional
 from app.core.config import settings
 from app.services.interview.schemas import (
     InterviewQuestionSchema,
@@ -15,7 +14,7 @@ class InterviewCoachEvaluator:
     - Gracefully falls back to high-fidelity deterministic semantic analysis when offline or unconfigured.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key or os.environ.get("GROQ_API_KEY")
         self.model = getattr(settings, "GROQ_MODEL", "llama-3.3-70b-versatile") or "llama-3.3-70b-versatile"
 
@@ -60,7 +59,7 @@ class InterviewCoachEvaluator:
         self,
         question_text: str,
         candidate_answer: str,
-        role: Optional[str] = None
+        role: str | None = None
     ) -> InterviewEvaluationRubric:
         """
         Evaluates candidate response across Clarity, Technical Accuracy, and Confidence.

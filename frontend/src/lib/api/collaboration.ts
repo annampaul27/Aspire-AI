@@ -5,15 +5,7 @@ import {
   CollaboratorPresence,
 } from "@/types";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-function getAuthHeaders(): HeadersInit {
-  const token = typeof window !== "undefined" ? localStorage.getItem("aspire_token") : null;
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
+import { getAuthHeaders, BASE_SERVER_URL as BASE_URL } from "@/lib/api/client";
 
 export interface MoveStageResponse {
   success: boolean;

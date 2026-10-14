@@ -1,5 +1,4 @@
 import os
-from typing import List
 from pydantic import BaseModel
 
 class InterviewCoachSettings(BaseModel):
@@ -22,7 +21,7 @@ class InterviewCoachSettings(BaseModel):
     OPTIMAL_WPM_MAX: float = 165.0
     
     # Common Verbal Filler Words & Tics
-    FILLER_WORDS: List[str] = [
+    FILLER_WORDS: list[str] = [
         "um", "uh", "like", "you know", "actually",
         "basically", "sort of", "kind of", "literally",
         "right", "i mean", "so yeah", "honestly"

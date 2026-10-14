@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional, List
+from typing import Optional
 from sqlalchemy import (
     String,
     Text,
@@ -20,7 +20,7 @@ class Organization(Base):
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     type: Mapped[str] = mapped_column(String(64), default="corporate")
-    logo: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    logo: Mapped[str | None] = mapped_column(String(255), nullable=True)
     plan: Mapped[str] = mapped_column(String(64), default="Enterprise")
     seats_used: Mapped[int] = mapped_column(Integer, default=0)
     seats_total: Mapped[int] = mapped_column(Integer, default=25)
@@ -28,12 +28,12 @@ class Organization(Base):
     
     # Enterprise SSO / SAML 2.0 / OIDC Configuration
     sso_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
-    sso_provider: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)  # okta, azure_ad, google
-    sso_domain: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, index=True)
-    idp_entity_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    idp_sso_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    idp_metadata_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    idp_certificate: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    sso_provider: Mapped[str | None] = mapped_column(String(64), nullable=True)  # okta, azure_ad, google
+    sso_domain: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    idp_entity_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    idp_sso_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    idp_metadata_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    idp_certificate: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now(), nullable=False
@@ -43,8 +43,8 @@ class Organization(Base):
     )
 
     # Relationships
-    users: Mapped[List["User"]] = relationship("User", back_populates="organization")
-    subscriptions: Mapped[List["Subscription"]] = relationship(
+    users: Mapped[list["User"]] = relationship("User", back_populates="organization")
+    subscriptions: Mapped[list["Subscription"]] = relationship(
         "Subscription", back_populates="organization"
     )
 
@@ -54,18 +54,18 @@ class User(Base):
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
-    password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(32), default="student", nullable=False)
-    org_id: Mapped[Optional[str]] = mapped_column(
+    org_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True
     )
     user_class: Mapped[str] = mapped_column(String(64), default="Fresher")
-    college: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    college: Mapped[str | None] = mapped_column(String(255), nullable=True)
     experience_years: Mapped[float] = mapped_column(Float, default=0.0)
     readiness_score: Mapped[int] = mapped_column(Integer, default=70)
     current_tier: Mapped[str] = mapped_column(String(32), default="bridgeable")
-    avatar_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    avatar_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     verified_skills_json: Mapped[str] = mapped_column(Text, default="[]")
     pipeline_status: Mapped[str] = mapped_column(String(32), default="applied", nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
@@ -77,11 +77,11 @@ class User(Base):
 
     # Relationships
     organization: Mapped[Optional["Organization"]] = relationship("Organization", back_populates="users")
-    assessments: Mapped[List["Assessment"]] = relationship("Assessment", back_populates="user")
-    dispatched_sprints: Mapped[List["DispatchedSprint"]] = relationship(
+    assessments: Mapped[list["Assessment"]] = relationship("Assessment", back_populates="user")
+    dispatched_sprints: Mapped[list["DispatchedSprint"]] = relationship(
         "DispatchedSprint", back_populates="candidate"
     )
-    verified_credentials: Mapped[List["VerifiedCredential"]] = relationship(
+    verified_credentials: Mapped[list["VerifiedCredential"]] = relationship(
         "VerifiedCredential", back_populates="candidate"
     )
 
@@ -108,10 +108,10 @@ class Subscription(Base):
     __tablename__ = "subscriptions"
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    org_id: Mapped[Optional[str]] = mapped_column(
+    org_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=True
     )
-    user_id: Mapped[Optional[str]] = mapped_column(
+    user_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )
     plan_id: Mapped[str] = mapped_column(String(64), default="enterprise")
@@ -119,10 +119,10 @@ class Subscription(Base):
     seats_purchased: Mapped[int] = mapped_column(Integer, default=25)
     billing_cycle: Mapped[str] = mapped_column(String(32), default="monthly")
     provider: Mapped[str] = mapped_column(String(32), default="razorpay")
-    provider_subscription_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
-    provider_payment_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
-    current_period_start: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
-    current_period_end: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
+    provider_subscription_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    provider_payment_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    current_period_start: Mapped[datetime.datetime | None] = mapped_column(DateTime, nullable=True)
+    current_period_end: Mapped[datetime.datetime | None] = mapped_column(DateTime, nullable=True)
     evaluations_used: Mapped[int] = mapped_column(Integer, default=0)
     evaluations_limit: Mapped[int] = mapped_column(Integer, default=25)
     active_jobs_limit: Mapped[int] = mapped_column(Integer, default=3)
@@ -147,14 +147,14 @@ class DispatchedSprint(Base):
     candidate_email: Mapped[str] = mapped_column(String(255), nullable=False)
     skill_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
     skill_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    org_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
-    job_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    org_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    job_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     status: Mapped[str] = mapped_column(String(32), default="dispatched", nullable=False)
     dispatched_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now(), nullable=False
     )
-    completed_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
-    credential_hash: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    completed_at: Mapped[datetime.datetime | None] = mapped_column(DateTime, nullable=True)
+    credential_hash: Mapped[str | None] = mapped_column(String(128), nullable=True)
     invite_url: Mapped[str] = mapped_column(Text, nullable=False)
 
     candidate: Mapped["User"] = relationship("User", back_populates="dispatched_sprints")
@@ -191,7 +191,7 @@ class Skill(Base):
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     category: Mapped[str] = mapped_column(String(64), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     weight: Mapped[float] = mapped_column(Float, default=3.0)
     is_critical: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime.datetime] = mapped_column(
@@ -214,8 +214,8 @@ class Assessment(Base):
     correct_count: Mapped[int] = mapped_column(Integer, nullable=False)
     time_taken_seconds: Mapped[int] = mapped_column(Integer, nullable=False)
     verification_status: Mapped[str] = mapped_column(String(32), nullable=False)
-    badge_tier: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
-    answers_log_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    badge_tier: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    answers_log_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     completed_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now(), nullable=False
     )
@@ -230,7 +230,7 @@ class AtsResume(Base):
     user_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    file_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    file_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     parsed_json: Mapped[str] = mapped_column(Text, nullable=False)
     ats_score: Mapped[int] = mapped_column(Integer, default=85)
     created_at: Mapped[datetime.datetime] = mapped_column(
@@ -248,17 +248,17 @@ class Job(Base):
     org_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     company: Mapped[str] = mapped_column(String(255), default="Acme HyperScale Systems")
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    department: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
-    location: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    department: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    location: Mapped[str | None] = mapped_column(String(128), nullable=True)
     type: Mapped[str] = mapped_column(String(64), default="Full-Time")
     experience_min_years: Mapped[float] = mapped_column(Float, default=0.0)
-    salary_range: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    salary_range: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     pass_threshold: Mapped[int] = mapped_column(Integer, default=85)
     opening_date: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False)
     application_deadline: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False)
-    critical_skills_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    optional_skills_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    critical_skills_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    optional_skills_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(String(32), default="active")
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now(), nullable=False
@@ -289,8 +289,8 @@ class UserNotification(Base):
     user_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    job_id: Mapped[str] = mapped_column(
-        String(64), ForeignKey("jobs.id", ondelete="CASCADE"), nullable=False
+    job_id: Mapped[str | None] = mapped_column(
+        String(64), ForeignKey("jobs.id", ondelete="CASCADE"), nullable=True
     )
     message: Mapped[str] = mapped_column(Text, nullable=False)
     notification_type: Mapped[str] = mapped_column(
@@ -319,13 +319,13 @@ class PipelineStageChange(Base):
     org_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
     )
-    job_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    job_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     from_stage: Mapped[str] = mapped_column(String(32), default="applied", nullable=False)
     to_stage: Mapped[str] = mapped_column(String(32), nullable=False)
-    changed_by_user_id: Mapped[Optional[str]] = mapped_column(
+    changed_by_user_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
-    reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now(), nullable=False
     )
@@ -341,7 +341,7 @@ class CandidateScorecard(Base):
     org_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
     )
-    job_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    job_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     reviewer_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
@@ -420,7 +420,7 @@ class AtsWebhookDelivery(Base):
     delivered_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now(), nullable=False
     )
-    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 class Cohort(Base):
@@ -444,8 +444,8 @@ class Cohort(Base):
     )
 
     # Relationships
-    students: Mapped[List["CohortStudent"]] = relationship("CohortStudent", back_populates="cohort", cascade="all, delete-orphan")
-    dispatches: Mapped[List["BatchDispatch"]] = relationship("BatchDispatch", back_populates="cohort", cascade="all, delete-orphan")
+    students: Mapped[list["CohortStudent"]] = relationship("CohortStudent", back_populates="cohort", cascade="all, delete-orphan")
+    dispatches: Mapped[list["BatchDispatch"]] = relationship("BatchDispatch", back_populates="cohort", cascade="all, delete-orphan")
 
 
 class CohortStudent(Base):
@@ -455,10 +455,10 @@ class CohortStudent(Base):
     cohort_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("cohorts.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    user_id: Mapped[Optional[str]] = mapped_column(
+    user_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("users.id", ondelete="SET NULL"), index=True, nullable=True
     )
-    roll_number: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    roll_number: Mapped[str | None] = mapped_column(String(64), nullable=True)
     student_name: Mapped[str] = mapped_column(String(255), nullable=False)
     student_email: Mapped[str] = mapped_column(String(255), nullable=False)
     current_readiness: Mapped[int] = mapped_column(Integer, default=70, nullable=False)
@@ -480,7 +480,7 @@ class BatchDispatch(Base):
     cohort_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("cohorts.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    dispatched_by: Mapped[Optional[str]] = mapped_column(
+    dispatched_by: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     dispatch_type: Mapped[str] = mapped_column(String(32), default="gap_sprint", nullable=False)
@@ -507,11 +507,11 @@ class ProctoringAnomalyLog(Base):
     __tablename__ = "proctoring_anomaly_logs"
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    student_id: Mapped[Optional[str]] = mapped_column(
+    student_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("users.id", ondelete="SET NULL"), index=True, nullable=True
     )
     student_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    cohort_id: Mapped[Optional[str]] = mapped_column(String(64), index=True, nullable=True)
+    cohort_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
     session_id: Mapped[str] = mapped_column(String(64), nullable=False)
     anomaly_type: Mapped[str] = mapped_column(String(64), nullable=False)
     severity: Mapped[str] = mapped_column(String(32), default="medium", nullable=False)

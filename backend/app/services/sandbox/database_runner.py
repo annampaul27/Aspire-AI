@@ -1,7 +1,6 @@
 import time
 import sqlite3
 import asyncio
-from typing import List
 
 from app.services.sandbox.base import BaseSandboxRunner
 from app.services.sandbox.schemas import (
@@ -117,7 +116,7 @@ class EphemeralDatabaseRunner(BaseSandboxRunner):
                         name="Index Syntax & DDL Correctness",
                         status="FAIL",
                         latency_metric="N/A",
-                        details=f"SQL compilation error: {str(sql_err)}"
+                        details=f"SQL compilation error: {sql_err!s}"
                     ),
                     ExecutionTestCase(
                         name="Execution Plan EXPLAIN (ANALYZE)",
@@ -137,7 +136,7 @@ class EphemeralDatabaseRunner(BaseSandboxRunner):
                     status=ExecutionStatus.SYNTAX_ERROR,
                     test_cases=test_cases,
                     execution_time_ms=round(t_elapsed, 2),
-                    query_plan=f"Error: {str(sql_err)}",
+                    query_plan=f"Error: {sql_err!s}",
                     error_message=str(sql_err),
                     cryptographic_hash=self.generate_proof_hash(
                         request.challenge_id, request.candidate_code, False
@@ -159,7 +158,7 @@ class EphemeralDatabaseRunner(BaseSandboxRunner):
             post_ms = ((time.perf_counter() - t_post_start) / 15) * 1000
 
             # Step 6: Verify Optimization & Build Test Suite
-            test_cases: List[ExecutionTestCase] = []
+            test_cases: list[ExecutionTestCase] = []
 
             # Test 1: DDL Syntax
             test_cases.append(

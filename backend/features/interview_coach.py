@@ -7,13 +7,12 @@ question generation and answer evaluation.
 The actual AI/API integration will be handled separately.
 """
 
-from typing import Dict, List
 
 
 def prepare_interview_question(
     role: str,
     topic: str
-) -> Dict:
+) -> dict:
     """
     Prepare requirements for generating an interview question.
     """
@@ -39,9 +38,9 @@ def prepare_interview_question(
 def build_interview_question(
     question_id: str,
     question_text: str,
-    expected_keywords: List[str],
-    hints: List[str]
-) -> Dict:
+    expected_keywords: list[str],
+    hints: list[str]
+) -> dict:
     """
     Build a structured interview question.
     """
@@ -60,7 +59,7 @@ def build_interview_question(
 def prepare_answer_evaluation(
     question_text: str,
     transcript: str
-) -> Dict:
+) -> dict:
     """
     Prepare a candidate's interview answer for evaluation.
     """
@@ -91,10 +90,10 @@ def build_interview_evaluation(
     clarity: float,
     technical_accuracy: float,
     confidence_estimate: float,
-    what_went_well: List[str],
-    what_to_improve: List[str],
+    what_went_well: list[str],
+    what_to_improve: list[str],
     better_answer: str
-) -> Dict:
+) -> dict:
     """
     Build a structured interview evaluation.
     """
