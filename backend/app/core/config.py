@@ -35,10 +35,13 @@ class Settings(BaseSettings):
     RAZORPAY_KEY_SECRET: str = "rzp_test_secret_aspire_2026"
     RAZORPAY_WEBHOOK_SECRET: str = "rzp_webhook_secret_2026"
 
+    # GitHub Analysis
+    GITHUB_PAT: str = ""
+
     model_config = SettingsConfigDict(
         case_sensitive=True,
         extra="allow",
-        env_file=(".env", "backend/.env"),
+        env_file=(".env", "../.env"),
         env_file_encoding="utf-8"
     )
 

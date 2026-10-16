@@ -1,5 +1,19 @@
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 from pydantic import BaseModel
+
+# Automatically discover and load unified monorepo .env or local .env
+_current_dir = Path(__file__).resolve().parent
+_candidates = [
+    Path.cwd() / ".env",
+    _current_dir.parents[2] / ".env",
+    _current_dir.parents[1] / ".env",
+]
+for _env_path in _candidates:
+    if _env_path.is_file():
+        load_dotenv(dotenv_path=_env_path, override=False)
+        break
 
 class InterviewCoachSettings(BaseModel):
     """

@@ -27,7 +27,7 @@ Aspire AI bridges the gap between talent supply (students) and employer demand (
 
 ## 🏆 SaaS Commercialization Milestones & Engineering Roadmap
 
-Following the [Full-Stack & SaaS Architectural Audit](SkillSetu_AI_SaaS_Architectural_Audit.pdf), Aspire AI has evolved from a 48-hour hackathon prototype into a hardened, production-grade enterprise platform.
+Following the comprehensive Full-Stack & SaaS Architectural Audit, Aspire AI has evolved from a 48-hour hackathon prototype into a hardened, production-grade enterprise platform.
 
 ### ✅ Sprint 1: Production Multi-Tenancy, Database Persistence & Hardened RBAC (Completed)
 - **Branch:** `feat/sprint-1-database-persistence-and-hardened-rbac`

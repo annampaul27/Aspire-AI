@@ -42,6 +42,7 @@ chroma_db/
 .env*.local
 .env.production
 *.env
+!.env.example
 *.pem
 
 # Logs
