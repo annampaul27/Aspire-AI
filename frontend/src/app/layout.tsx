@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import ToastContainer from "@/components/layout/ToastContainer";
 
 export const metadata: Metadata = {
-  title: "Aspire AI — Verified Talent Infrastructure & Competency Trust Engine",
+  title: "Aspire AI  -  Verified Talent Infrastructure & Competency Trust Engine",
   description:
     "Role-separated talent verification platform connecting employers and candidates through cryptographically verified skill assessments, AST-isolated sandboxes, and institutional NAAC reporting.",
 };

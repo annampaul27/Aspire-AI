@@ -518,7 +518,7 @@ export default function BackendEngineTabs({
                   <span>90-Day Career Compass Roadmap Generator</span>
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Personalized 3-phase curriculum: Core Deficit Closure (Days 1–30) → Production Microservices (Days 31–60) → System Design (Days 61–90).
+                  Personalized 3-phase curriculum: Core Deficit Closure (Days 1-30) → Production Microservices (Days 31-60) → System Design (Days 61-90).
                 </p>
               </div>
               <div className="flex items-center gap-2">

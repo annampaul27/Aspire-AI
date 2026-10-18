@@ -386,7 +386,7 @@ export default function EmployerProfilePage() {
               <div>
                 <span className="text-xs font-semibold text-white block">Automated Gap Sprint Dispatch</span>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Automatically invite bridgeable candidates (70–84%) to 48-hour micro-assessments to close skill deficits.
+                  Automatically invite bridgeable candidates (70-84%) to 48-hour micro-assessments to close skill deficits.
                 </p>
               </div>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">

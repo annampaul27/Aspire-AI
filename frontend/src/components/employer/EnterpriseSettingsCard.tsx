@@ -464,7 +464,7 @@ export default function EnterpriseSettingsCard({
                         : "bg-rose-500/10 text-rose-300 border-rose-500/30"
                     }`}
                   >
-                    Ping Result: HTTP {pingStatus[sub.id].status} — {pingStatus[sub.id].message}
+                    Ping Result: HTTP {pingStatus[sub.id].status}  -  {pingStatus[sub.id].message}
                   </div>
                 )}
               </div>
