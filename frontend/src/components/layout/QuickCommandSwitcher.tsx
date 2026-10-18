@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
-import { RoleType } from "@/types";
 
 interface CommandItem {
   id: string;
@@ -192,17 +191,30 @@ export default function QuickCommandSwitcher({
       (item.badge && item.badge.toLowerCase().includes(query.toLowerCase()))
   );
 
-  useEffect(() => {
+  const handleClose = useCallback(() => {
+    setQuery("");
     setSelectedIndex(0);
-  }, [query]);
+    onClose();
+  }, [onClose]);
+
+  const executeItem = useCallback(
+    (item: CommandItem) => {
+      handleClose();
+      if (item.action) {
+        item.action();
+      } else if (item.href) {
+        router.push(item.href);
+      }
+    },
+    [handleClose, router]
+  );
 
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
-    } else {
-      setQuery("");
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
@@ -213,7 +225,7 @@ export default function QuickCommandSwitcher({
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        handleClose();
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedIndex((prev) =>
@@ -235,16 +247,7 @@ export default function QuickCommandSwitcher({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, filteredItems, selectedIndex]);
-
-  const executeItem = (item: CommandItem) => {
-    onClose();
-    if (item.action) {
-      item.action();
-    } else if (item.href) {
-      router.push(item.href);
-    }
-  };
+  }, [isOpen, filteredItems, selectedIndex, handleClose, executeItem]);
 
   if (!isOpen) return null;
 
@@ -254,7 +257,7 @@ export default function QuickCommandSwitcher({
       aria-modal="true"
       aria-label="Feature Quick Switcher"
       className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/30 backdrop-blur-sm transition-opacity"
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         className="w-full max-w-2xl bg-[#FFFFFF] rounded-xl border border-[#D2D2D7] shadow-2xl overflow-hidden text-[#1D1D1F] animate-in fade-in zoom-in-95 duration-100"
@@ -280,7 +283,10 @@ export default function QuickCommandSwitcher({
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelectedIndex(0);
+            }}
             placeholder="Jump to any workspace, assessment engine, or legal page..."
             className="w-full text-sm bg-transparent outline-none text-[#1D1D1F] placeholder-[#86868B]"
           />
