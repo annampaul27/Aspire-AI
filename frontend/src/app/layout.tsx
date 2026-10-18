@@ -1,24 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/lib/store";
 import Navbar from "@/components/layout/Navbar";
 import ToastContainer from "@/components/layout/ToastContainer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Aspire AI — AI-Powered Talent & Skill Assessment Platform",
+  title: "Aspire AI — Verified Talent Infrastructure & Competency Trust Engine",
   description:
-    "Connect employers with job-ready talent through verified skill assessments, intelligent candidate matching, and structured learning paths.",
+    "Role-separated talent verification platform connecting employers and candidates through cryptographically verified skill assessments, AST-isolated sandboxes, and institutional NAAC reporting.",
 };
 
 export default function RootLayout({
@@ -27,8 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} dark h-full`} suppressHydrationWarning>
-      <body suppressHydrationWarning className="min-h-screen bg-[#0a0f1a] text-gray-100 flex flex-col font-sans antialiased">
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className="min-h-screen bg-[#FBFBFD] text-[#1D1D1F] flex flex-col font-sans antialiased selection:bg-[#0071E3]/15 selection:text-[#0071E3]"
+      >
         <StoreProvider>
           <div className="relative min-h-screen flex flex-col">
             <Navbar />
