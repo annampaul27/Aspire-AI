@@ -366,15 +366,20 @@ AI-Skill/
 │   ├── courses/                 # 13 JSON-authored subject curricula & mock tests
 │   ├── features/                # CareerCompass feature modules (roadmap, portfolio, coach)
 │   ├── requirements.txt         # Python dependencies
-│   ├── test_ats_suite.py        # ATS & deficit resistance test suite
-│   ├── test_sprint1_rbac_and_persistence.py # Multi-tenancy & RBAC integration suite
-│   ├── test_sandbox_security.py # AST security analyzer test suite
-│   ├── test_sandbox_python_runner.py # Subprocess isolation & timeout test suite
-│   ├── test_sandbox_database_runner.py # 50k-row EXPLAIN query plan test suite
-│   ├── test_sandbox_suite.py    # End-to-end sandbox execution & anti-cheating suite
-│   ├── test_sprint4_unification_and_persistence.py # Database unification & persistence suite
-│   ├── test_sprint5_billing_and_metering.py # SaaS billing, dual gateways & metering suite
-│   ├── test_sprint7_collaboration_and_websockets.py # WebSockets, live pipeline & scorecard suite
+│   ├── tests/                   # 22 Comprehensive Backend Pytest Suites
+│   │   ├── conftest.py          # Database initialization & session priming
+│   │   ├── test_ats_suite.py    # ATS & deficit resistance test suite
+│   │   ├── test_sprint1_rbac_and_persistence.py # Multi-tenancy & RBAC integration suite
+│   │   ├── test_sandbox_security.py # AST security analyzer test suite
+│   │   ├── test_sandbox_python_runner.py # Subprocess isolation & timeout test suite
+│   │   ├── test_sandbox_database_runner.py # 50k-row EXPLAIN query plan test suite
+│   │   ├── test_sandbox_suite.py # End-to-end sandbox execution & anti-cheating suite
+│   │   ├── test_sprint4_unification_and_persistence.py # Database unification & persistence suite
+│   │   ├── test_sprint5_billing_and_metering.py # SaaS billing, dual gateways & metering suite
+│   │   ├── test_sprint7_collaboration_and_websockets.py # WebSockets, live pipeline & scorecard suite
+│   │   ├── test_sprint10_observability_and_analytics.py # Prometheus telemetry & analytics suite
+│   │   ├── test_sprint11_multi_agent_and_enterprise.py # 3-agent executive panel & SSO suite
+│   │   └── test_sprint13_tpo_cohorts_and_naac.py # Institutional TPO & NAAC accreditation suite
 │   └── run.py                   # Local dev server launcher (Port 8000)
 │
 ├── services/
@@ -486,29 +491,38 @@ $env:PYTHONPATH="." ; pytest backend/ services/interview_coach/tests/ -v
 
 Run specific subsystem test suites:
 ```bash
+# Run all tests across backend and microservices
+pytest
+
 # Test Sprint 1 (RBAC, Multi-Tenancy & Database Persistence)
-pytest -v backend/test_sprint1_rbac_and_persistence.py
+pytest -v backend/tests/test_sprint1_rbac_and_persistence.py
 
 # Test Sprint 2 (AST Security, Ephemeral 50k DB Sandbox & Timeout Runner)
-pytest -v backend/test_sandbox_security.py backend/test_sandbox_python_runner.py backend/test_sandbox_database_runner.py backend/test_sandbox_suite.py
+pytest -v backend/tests/test_sandbox_security.py backend/tests/test_sandbox_python_runner.py backend/tests/test_sandbox_database_runner.py backend/tests/test_sandbox_suite.py
 
 # Test Sprint 3 (ATS Parser, Dynamic Interview Rubric & Personalized Roadmap)
-pytest -v backend/test_resume_parser_unified.py backend/test_interview_evaluator.py backend/test_dynamic_roadmap.py backend/test_assessments_resume_suite.py backend/test_features_suite.py
+pytest -v backend/tests/test_resume_parser_unified.py backend/tests/test_interview_evaluator.py backend/tests/test_dynamic_roadmap.py backend/tests/test_assessments_resume_suite.py backend/tests/test_features_suite.py
 
 # Test Sprint 4 (Database Unification, Auth Persistence & Multi-Tenant Scoping)
-pytest -v backend/test_sprint4_unification_and_persistence.py
+pytest -v backend/tests/test_sprint4_unification_and_persistence.py
 
 # Test Sprint 5 (SaaS Billing, Dual Gateways, Webhooks & Metering Quotas)
-pytest -v backend/test_sprint5_billing_and_metering.py
+pytest -v backend/tests/test_sprint5_billing_and_metering.py
 
 # Test Sprint 7 (Real-Time WebSockets, Collaborative Kanban & Team Consensus Scorecards)
-pytest -v backend/test_sprint7_collaboration_and_websockets.py
+pytest -v backend/tests/test_sprint7_collaboration_and_websockets.py
 
 # Test Sprint 8 (Multimodal AI Interview Coach, Speech Acoustics, Vision Telemetry & CHI Algorithms)
-pytest -v services/interview_coach/tests/ backend/test_interview_coach_integration.py
+pytest -v services/interview_coach/tests/ backend/tests/test_interview_coach_integration.py
+
+# Test Sprint 10 & 11 (Observability Analytics, 3-Agent Executive Panel & Enterprise SSO)
+pytest -v backend/tests/test_sprint10_observability_and_analytics.py backend/tests/test_sprint11_multi_agent_and_enterprise.py
+
+# Test Sprint 13 (Institutional TPO Cohort Management & NAAC Accreditation)
+pytest -v backend/tests/test_sprint13_tpo_cohorts_and_naac.py
 
 # Test ATS Engine & ChromaDB Semantic Matching
-pytest -v backend/test_ats_suite.py
+pytest -v backend/tests/test_ats_suite.py
 ```
 
 Run frontend code quality linting & production build:
