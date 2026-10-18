@@ -614,7 +614,7 @@ TEST 12.5: Frontend Employer Portal "Hiring Analytics & APM" Tab
 
 TEST 12.6: Automated Observability & Analytics Pytest Suite
 - Command:
-  python -m pytest backend/test_sprint10_observability_and_analytics.py -v
+  python -m pytest backend/tests/test_sprint10_observability_and_analytics.py -v
 - Expected Result:
   6 passed in ~2.5s with 100% pass rate.
 
@@ -703,7 +703,7 @@ TEST 13.6: Frontend Employer Profile "Enterprise Settings" Card
 
 TEST 13.7: Sprint 11 Automated Pytest Regression Suite
 - Command:
-  python -m pytest backend/test_sprint11_multi_agent_and_enterprise.py services/interview_coach/tests/test_panel_evaluator.py -v
+  python -m pytest backend/tests/test_sprint11_multi_agent_and_enterprise.py services/interview_coach/tests/test_panel_evaluator.py -v
 - Expected Result:
   9 passed in ~3.0s with 100% pass rate.
 
@@ -778,7 +778,7 @@ TEST 14.5: Assessment Integrity & Proctoring Anomaly Audit Trail
 
 TEST 14.6: Sprint 13 Automated Pytest Suite
 - Command:
-  python -m pytest backend/test_sprint13_tpo_cohorts_and_naac.py -v
+  python -m pytest backend/tests/test_sprint13_tpo_cohorts_and_naac.py -v
 - Expected Result:
   5 passed in ~3.2s with 100% pass rate.
 
