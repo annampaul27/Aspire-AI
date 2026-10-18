@@ -147,7 +147,7 @@ export default function UniversityCohortAnalytics() {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-semibold text-emerald-300">
-                  Active Batch Sprint: PostgreSQL Optimization — 47h 59m remaining (64 students enrolled, 18 already completed)
+                  Active Batch Sprint: PostgreSQL Optimization  -  47h 59m remaining (64 students enrolled, 18 already completed)
                 </span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-900/80 text-emerald-300 border border-emerald-700 flex items-center gap-1 font-mono">
                   <Clock className="w-3 h-3" /> Live

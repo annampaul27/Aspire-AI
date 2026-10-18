@@ -136,7 +136,7 @@ const DEFAULT_PARSED_DATA: ATSResumeData = {
     },
   ],
   certifications: [
-    "AWS Certified Solutions Architect – Associate",
+    "AWS Certified Solutions Architect - Associate",
     "PostgreSQL Certified Query Performance Tuning Specialist",
   ],
   ats_metadata: {

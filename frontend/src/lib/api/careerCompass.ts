@@ -32,7 +32,7 @@ export async function generate90DayCareerCompass(
           {
             phase_id: "phase_1",
             phase_name: "Phase 1: Core Deficit Closure & Async Concurrency",
-            days_range: "Days 1 – 30",
+            days_range: "Days 1 - 30",
             focus_area: "High-throughput asynchronous I/O and SQL schema optimization",
             weekly_milestones: [
               {
@@ -68,7 +68,7 @@ export async function generate90DayCareerCompass(
           {
             phase_id: "phase_2",
             phase_name: "Phase 2: Production Microservices & Docker Infrastructure",
-            days_range: "Days 31 – 60",
+            days_range: "Days 31 - 60",
             focus_area: "Multi-stage containerization, message brokers, and transactional sagas",
             weekly_milestones: [
               {
@@ -104,7 +104,7 @@ export async function generate90DayCareerCompass(
           {
             phase_id: "phase_3",
             phase_name: "Phase 3: System Design, High-Availability & Mock Interviews",
-            days_range: "Days 61 – 90",
+            days_range: "Days 61 - 90",
             focus_area: "Distributed consensus, architectural trade-offs, and live technical grilling",
             weekly_milestones: [
               {
@@ -153,8 +153,8 @@ export async function generate90DayCareerCompass(
     phases: [
       {
         phase_id: "phase_1",
-        phase_name: "Phase 1: Core Deficit Closure (Days 1–30)",
-        days_range: "Days 1 – 30",
+        phase_name: "Phase 1: Core Deficit Closure (Days 1-30)",
+        days_range: "Days 1 - 30",
         focus_area: "Async event loop non-blocking throughput & PostgreSQL indexing",
         weekly_milestones: [
           {
@@ -189,8 +189,8 @@ export async function generate90DayCareerCompass(
       },
       {
         phase_id: "phase_2",
-        phase_name: "Phase 2: Production Microservices & Docker (Days 31–60)",
-        days_range: "Days 31 – 60",
+        phase_name: "Phase 2: Production Microservices & Docker (Days 31-60)",
+        days_range: "Days 31 - 60",
         focus_area: "Multi-stage containers, Kafka streaming, and Saga patterns",
         weekly_milestones: [
           {
@@ -225,8 +225,8 @@ export async function generate90DayCareerCompass(
       },
       {
         phase_id: "phase_3",
-        phase_name: "Phase 3: System Design & Mock Interviews (Days 61–90)",
-        days_range: "Days 61 – 90",
+        phase_name: "Phase 3: System Design & Mock Interviews (Days 61-90)",
+        days_range: "Days 61 - 90",
         focus_area: "Distributed consensus, Raft protocol, and live interview coaching",
         weekly_milestones: [
           {
@@ -284,21 +284,21 @@ export async function runMarketSalaryIntelligence(
     skill_premium_percentage: 28,
     salary_bands: [
       {
-        experience_level: "Entry-Level (0–2 Yrs / Campus)",
-        base_lpa: "₹6.5 – ₹8.5 LPA",
-        with_docker_fastapi_premium: "₹10.5 – ₹14.2 LPA",
+        experience_level: "Entry-Level (0-2 Yrs / Campus)",
+        base_lpa: "₹6.5 - ₹8.5 LPA",
+        with_docker_fastapi_premium: "₹10.5 - ₹14.2 LPA",
         growth_delta: "+58% Starting CTC Lift",
       },
       {
-        experience_level: "Mid-Level (2–4 Yrs)",
-        base_lpa: "₹12.0 – ₹16.0 LPA",
-        with_docker_fastapi_premium: "₹18.5 – ₹24.0 LPA",
+        experience_level: "Mid-Level (2-4 Yrs)",
+        base_lpa: "₹12.0 - ₹16.0 LPA",
+        with_docker_fastapi_premium: "₹18.5 - ₹24.0 LPA",
         growth_delta: "+42% Increment Band",
       },
       {
-        experience_level: "Senior / Lead (4–7 Yrs)",
-        base_lpa: "₹22.0 – ₹28.0 LPA",
-        with_docker_fastapi_premium: "₹32.0 – ₹45.0 LPA",
+        experience_level: "Senior / Lead (4-7 Yrs)",
+        base_lpa: "₹22.0 - ₹28.0 LPA",
+        with_docker_fastapi_premium: "₹32.0 - ₹45.0 LPA",
         growth_delta: "+38% Tier-1 Unicorn Band",
       },
     ],

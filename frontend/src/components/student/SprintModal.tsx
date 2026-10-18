@@ -526,7 +526,7 @@ export default function SprintModal({ sprint, onClose }: SprintModalProps) {
 
               <div>
                 <h4 className="text-xl font-bold text-white">
-                  Assessment Complete — Competency Mastered!
+                  Assessment Complete  -  Competency Mastered!
                 </h4>
                 <p className="text-xs text-gray-400 mt-1">
                   You scored <span className="text-emerald-400 font-bold font-mono text-sm">{score}%</span> on{" "}

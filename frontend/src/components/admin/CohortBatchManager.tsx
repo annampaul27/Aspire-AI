@@ -278,7 +278,7 @@ export default function CohortBatchManager() {
                   const uplift = st.current_readiness - st.baseline_readiness;
                   return (
                     <tr key={st.id} className="hover:bg-gray-800/40">
-                      <td className="px-3 py-2.5 font-mono text-gray-400">{st.roll_number || "—"}</td>
+                      <td className="px-3 py-2.5 font-mono text-gray-400">{st.roll_number || " - "}</td>
                       <td className="px-3 py-2.5 font-medium text-white">{st.student_name}</td>
                       <td className="px-3 py-2.5 text-gray-400">{st.student_email}</td>
                       <td className="px-3 py-2.5 font-mono text-gray-400">{st.baseline_readiness}%</td>

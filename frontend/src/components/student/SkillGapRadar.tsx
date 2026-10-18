@@ -66,12 +66,12 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
   return (
     <div className="space-y-6">
       {/* Target Role Selector & High-Level Match Bar */}
-      <div className="p-6 rounded-xl bg-gray-900 border border-gray-800">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-white border border-[#E5E5EA] shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Target className="w-4 h-4 text-blue-400" />
-              <span className="text-xs uppercase text-blue-400 font-semibold tracking-wider">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Target className="w-4 h-4 text-[#0071E3]" />
+              <span className="text-xs uppercase text-[#0071E3] font-semibold tracking-wider">
                 Target Role Benchmark
               </span>
             </div>
@@ -79,7 +79,7 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
               <select
                 value={activeJobId}
                 onChange={(e) => setActiveJobId(e.target.value)}
-                className="bg-gray-950 border border-gray-800 text-white font-medium text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+                className="bg-[#F5F5F7] border border-[#D2D2D7] text-[#1D1D1F] font-medium text-xs rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0071E3]"
               >
                 {jobs.map((j) => (
                   <option key={j.id} value={j.id}>
@@ -88,37 +88,37 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
                 ))}
               </select>
             </div>
-            <p className="text-xs text-gray-400 mt-2">
-              Benchmarked against active job requisitions • Direct apply threshold:{" "}
-              <strong className="text-white font-mono">{targetJob.passThreshold}%</strong>
+            <p className="text-xs text-[#6E6E73] mt-2 leading-relaxed">
+              Benchmarked against active job requisitions. Direct apply threshold:{" "}
+              <strong className="text-[#1D1D1F] font-mono">{targetJob.passThreshold}%</strong>
             </p>
           </div>
 
           {/* Current Fit Score & Direct Apply Gate */}
-          <div className="flex items-center gap-4 bg-gray-950 p-4 rounded-lg border border-gray-800 shrink-0">
+          <div className="flex items-center gap-4 bg-[#F5F5F7] p-4 rounded-xl border border-[#E5E5EA] shrink-0">
             <div className="text-right">
-              <span className="text-xs text-gray-400 uppercase block">
+              <span className="text-[11px] text-[#6E6E73] uppercase block font-medium">
                 Job Readiness Fit
               </span>
               <span
                 className={`text-2xl font-bold font-mono ${
                   isJobReady
-                    ? "text-emerald-400"
+                    ? "text-emerald-700"
                     : currentStudent.readinessScore >= 60
-                    ? "text-amber-400"
-                    : "text-red-400"
+                    ? "text-amber-700"
+                    : "text-rose-700"
                 }`}
               >
                 {currentStudent.readinessScore}%
               </span>
               <span
                 className={`text-[10px] font-mono uppercase block font-semibold ${
-                  isJobReady ? "text-emerald-400" : "text-amber-400"
+                  isJobReady ? "text-emerald-700" : "text-amber-700"
                 }`}
               >
                 {currentStudent.currentTier.replace("_", " ")}
               </span>
-              <span className="text-[10px] text-gray-500 block font-mono">
+              <span className="text-[10px] text-[#6E6E73] block font-mono">
                 {verifiedCount}/{skillDeltas.length} Verified
               </span>
             </div>
@@ -127,7 +127,7 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
               {isJobReady ? (
                 <button
                   onClick={handleApply}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-[#0071E3] hover:bg-[#0077ED] text-white transition-colors"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Apply Now</span>
@@ -135,11 +135,11 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
               ) : (
                 <button
                   disabled
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium bg-gray-850 text-gray-400 border border-gray-800 cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium bg-white text-[#86868B] border border-[#D2D2D7] cursor-not-allowed"
                   title="Restricted to ≥85% Job-Ready tier. Close remaining gaps to unlock direct apply."
                 >
-                  <Lock className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Apply Locked (Requires 85%)</span>
+                  <Lock className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Apply Locked (&ge;85%)</span>
                 </button>
               )}
             </div>
@@ -148,25 +148,25 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
       </div>
 
       {/* Visual Skill Gap Delta Grid */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="text-xs uppercase font-medium tracking-wider text-gray-400 flex items-center gap-2">
-            <span>Skill Gap Breakdown</span>
+          <h4 className="text-xs uppercase font-semibold tracking-wider text-[#6E6E73]">
+            Skill Gap Breakdown
           </h4>
           <div className="flex items-center gap-4 text-xs">
-            <span className="flex items-center gap-1.5 text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" /> Verified
+            <span className="flex items-center gap-1.5 text-emerald-700 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-600" /> Verified
             </span>
-            <span className="flex items-center gap-1.5 text-amber-400">
-              <span className="w-2 h-2 rounded-full bg-amber-400" /> Self-Reported
+            <span className="flex items-center gap-1.5 text-amber-700 font-medium">
+              <span className="w-2 h-2 rounded-full bg-amber-500" /> Self-Reported
             </span>
-            <span className="flex items-center gap-1.5 text-rose-400">
+            <span className="flex items-center gap-1.5 text-rose-700 font-medium">
               <span className="w-2 h-2 rounded-full bg-rose-500" /> Missing Gap
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {skillDeltas.map((item) => {
             const isCritical = item.skill.isCritical;
             const isVerified = item.status === "verified";
@@ -175,54 +175,54 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
             return (
               <div
                 key={item.skill.id}
-                className={`p-4 rounded-lg border transition-colors flex flex-col justify-between ${
+                className={`p-5 rounded-2xl border transition-all flex flex-col justify-between bg-white ${
                   isVerified
-                    ? "bg-gray-900 border-gray-800 hover:border-emerald-800"
+                    ? "border-emerald-200 shadow-xs"
                     : isUnverified
-                    ? "bg-gray-900 border-gray-800 hover:border-amber-800"
-                    : "bg-gray-900 border-gray-800 hover:border-rose-900"
+                    ? "border-amber-200 shadow-xs"
+                    : "border-[#E5E5EA] shadow-xs"
                 }`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-xs text-white">
+                        <span className="font-semibold text-xs text-[#1D1D1F]">
                           {item.skill.name}
                         </span>
                         {isCritical ? (
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 font-medium">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-50 text-[#0071E3] border border-blue-200 font-medium">
                             Critical (3.0)
                           </span>
                         ) : (
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-800 text-gray-400">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F5F5F7] text-[#6E6E73]">
                             Optional (1.0)
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-gray-500 capitalize block mt-0.5">
+                      <span className="text-xs text-[#6E6E73] capitalize block mt-1">
                         Category: {item.skill.category.replace("_", " ")}
                       </span>
                     </div>
 
                     <div className="text-right">
                       {isVerified ? (
-                        <span className="flex items-center gap-1 text-xs text-emerald-400 font-medium">
+                        <span className="flex items-center gap-1 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">
                           <ShieldCheck className="w-3.5 h-3.5" /> Verified ({item.score}%)
                         </span>
                       ) : isUnverified ? (
-                        <span className="text-xs text-amber-400 flex items-center gap-1 font-medium">
+                        <span className="text-xs text-amber-700 flex items-center gap-1 font-semibold bg-amber-50 px-2 py-0.5 rounded-full">
                           <AlertCircle className="w-3.5 h-3.5" /> Unverified
                         </span>
                       ) : (
-                        <span className="text-xs text-rose-400 font-medium">
+                        <span className="text-xs text-rose-700 font-semibold bg-rose-50 px-2 py-0.5 rounded-full">
                           Missing Gap
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+                  <p className="text-xs text-[#6E6E73] mt-2.5 leading-relaxed">
                     {isVerified
                       ? "Verified credential active. Contributes positive weight to your job readiness match."
                       : isUnverified
@@ -232,15 +232,15 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
                 </div>
 
                 {/* Action button */}
-                <div className="mt-3 pt-2.5 border-t border-gray-800 flex items-center justify-between">
+                <div className="mt-4 pt-3 border-t border-[#E5E5EA] flex items-center justify-between">
                   {isVerified ? (
-                    <span className="text-xs font-mono text-gray-400 truncate max-w-[200px]">
+                    <span className="text-xs font-mono text-[#6E6E73] truncate max-w-[200px]">
                       Hash: {item.hash?.slice(0, 14)}...
                     </span>
                   ) : (
                     <button
                       onClick={() => onLaunchSprint(item.skill.id)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0071E3] hover:bg-[#0077ED] text-white font-medium text-xs transition-colors"
                     >
                       <Zap className="w-3.5 h-3.5" />
                       <span>Start 10-Min Sprint</span>
@@ -248,7 +248,7 @@ export default function SkillGapRadar({ onLaunchSprint }: SkillGapRadarProps) {
                   )}
 
                   {!isVerified && (
-                    <span className="text-xs text-gray-500">~10 mins</span>
+                    <span className="text-xs text-[#6E6E73]">~10 mins</span>
                   )}
                 </div>
               </div>
